@@ -6,7 +6,7 @@
 
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-       
+
 
         <link rel="stylesheet" href="temp1/fonts/icomoon/style.css">
 
@@ -23,7 +23,18 @@
         <link rel="stylesheet" href="temp1/css/aos.css">
 
         <link rel="stylesheet" href="temp1/css/style.css">
+        <style>
 
+            img{
+                max-width:350px;
+                /*  display: none;*/
+                visibility: hidden;
+            }
+            /*input[type=file]{
+            padding:10px;
+            background:#2d2d2d;}*/
+
+        </style>
     </head>
     <body>
         <% request.setCharacterEncoding("UTF-8"); %>
@@ -86,9 +97,9 @@
                                                                     </li>-->
 
 
-                               
-                                    <img style="height: 100px ; width: 140px" src="logo_titd.png"/>
-                                
+
+                                <img style="height: 100px ; width: 140px" src="logo_titd.png"/>
+
 
                             </ul>
                         </nav>
@@ -145,7 +156,7 @@
                             <input type="hidden"  name="requestID" value="<%= requestID%>">
                             <input type="hidden"  name="ServiceType" value="<%= ServiceType%>">
                             <input type="hidden" id="FullNameID"  name="FullName" value="<%= FullName%>">
-                          
+
 
 
                             <!--                            <div class="row form-group">
@@ -167,12 +178,14 @@
                                                             </div>
                                                         </div>-->
                             <div ng-controller="demoCtrl">
-                                <label class="text-black" for="email">ملف الصور</label> <br/>
-                                <input  id="imgnid" type="file" accept="image/*" ng-model="image1" name="imgFile" image="image1"
-                                       resize-max-height="400" resize-max-width="400" resize-quality="0.5" resize-type="image/jpg" ng-image-compress required/>
+                                <!--                                <label class="text-black" for="email">ملف الصور</label> <br/>
+                                                                <input  id="imgnid" type="file" accept="image/*" ng-model="image1" name="imgFile" image="image1"
+                                                                       resize-max-height="400" resize-max-width="400" resize-quality="0.5" resize-type="image/jpg" ng-image-compress required/>-->
 
-                                <img ng-src="{{watchedImgData}}" height="100" name="compressedAgain" />
+                                <!--                                <img ng-src="{{watchedImgData}}" height="100" name="compressedAgain" />-->
 
+                                <input onchange="readURL(this);"  id="imgnid" type="file" accept="image/*"  name="imgFile" required/>
+                                <img id="blah" src="http://placehold.it/180" alt="your image" />
 
                                 <!-- just do a console.log of {{image1}} to see what other options are in the file object -->
                             </div>
@@ -329,20 +342,35 @@
 
 
 
-  function Filevalidation(){ 
-        const fi = document.getElementById('imgnid'); 
-        // Check if any file is selected. 
-        if (fi.files.length > 0) { 
-            for (const i = 0; i <= fi.files.length - 1; i++) { 
-  
-                const fsize = fi.files.item(i).size; 
-                const file = Math.round((fsize / 1024)); 
-                // The size of the file. 
-                if (file >= 150) { 
-                    alert(" ادخل صورة اقل من   150 كيلوبايت"); 
-                    document.getElementById('imgnid').value = "";
-                   // return false;
+
+            function readURL(input) {
+                document.getElementById("blah").style.visibility = "visible";
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#blah')
+                                .attr('src', e.target.result);
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
                 }
+            }
+
+            function Filevalidation() {
+                const fi = document.getElementById('imgnid');
+                // Check if any file is selected. 
+                if (fi.files.length > 0) {
+                    for (const i = 0; i <= fi.files.length - 1; i++) {
+
+                        const fsize = fi.files.item(i).size;
+                        const file = Math.round((fsize / 1024));
+                        // The size of the file. 
+                        if (file >= 150) {
+                            alert(" ادخل صورة اقل من   150 كيلوبايت");
+                            document.getElementById('imgnid').value = "";
+                            // return false;
+                        }
 //                else if (file < 2048) { 
 //                    alert( 
 //                      "File too small, please select a file greater than 2mb"); 
@@ -350,10 +378,10 @@
 //                    document.getElementById('size').innerHTML = '<b>'
 //                    + file + '</b> KB'; 
 //                } 
-            } 
-        } 
-    } 
-    
+                    }
+                }
+            }
+
             function showEgy() {
 
                 document.getElementById("selectEF").style.display = "none";

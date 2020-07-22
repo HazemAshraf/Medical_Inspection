@@ -59,7 +59,7 @@ public class logout extends HttpServlet {
                                  
                                 
                             // }   
-            response.sendRedirect("/API/index.html");
+            response.sendRedirect("/API/index.jsp");
         }
     }
 

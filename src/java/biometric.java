@@ -216,19 +216,26 @@ public class biometric extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            String nationalID = request.getParameter("nationalID");
-            String FullName = request.getParameter("FullName");
+//            String nationalID = request.getParameter("nationalID");
+//            boolean agnby = false;
+//            if(!nationalID.matches("[0-9]+")){
+//                System.out.println("agnbyyyyyyyyyyyyyyyyyyy");
+//            agnby = true;
+//            }
+//            String FullName = request.getParameter("FullName");
 //            ByteBuffer x = ByteBuffer.wrap(FullName.getBytes());
 //
 //            CharBuffer a = java.nio.charset.StandardCharsets.UTF_8.decode(x);
 //            FullName = new String(FullName.getBytes(), StandardCharsets.UTF_8);
-            System.out.println("Full Name ---------- " + FullName + "aaaaaaaaa " + request.getParameter("FullName"));
-            System.out.println("biometric servlet : " + nationalID);
-            String passNo = request.getParameter("passportNo");
-            String theCountry = request.getParameter("passportIssueCountry");
-            String issueCountryComposite = theCountry + passNo;
+//            System.out.println("Full Name ---------- " + FullName + "aaaaaaaaa " + request.getParameter("FullName"));
+//            System.out.println("biometric servlet : " + nationalID);
+//            String passNo = request.getParameter("passportNo");
+//            String theCountry = request.getParameter("passportIssueCountry");
+//            
+            
+//            String issueCountryComposite = theCountry + passNo;
             String requestID = request.getParameter("requestID");
-            String ServiceType = request.getParameter("ServiceType");
+//            String ServiceType = request.getParameter("ServiceType");
 
             Part bioFile = request.getPart("bioFile");
             String photo64 = "";
@@ -272,21 +279,21 @@ public class biometric extends HttpServlet {
                     e.printStackTrace();
                 }
                 BufferedImage image = ImageIO.read(f);
-
-                File compressedImageFile = new File(f.getAbsolutePath());
-                OutputStream os = new FileOutputStream(compressedImageFile);
-                Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
-                ImageWriter writer = (ImageWriter) writers.next();
-                ImageOutputStream ios = ImageIO.createImageOutputStream(os);
-                writer.setOutput(ios);
-                ImageWriteParam param = writer.getDefaultWriteParam();
-                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                param.setCompressionQuality(0.7f);
-                writer.write(null, new IIOImage(image, null, null), param);
                 
-                os.close();
-                ios.close();
-                writer.dispose();
+                File compressedImageFile = new File(f.getAbsolutePath());
+//                OutputStream os = new FileOutputStream(compressedImageFile);
+//                Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+//                ImageWriter writer = (ImageWriter) writers.next();
+//                ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+//                writer.setOutput(ios);
+//                ImageWriteParam param = writer.getDefaultWriteParam();
+//                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+//                param.setCompressionQuality(0.7f);
+//                writer.write(null, new IIOImage(image, null, null), param);
+//                
+//                os.close();
+//                ios.close();
+//                writer.dispose();
 
                 // get compressed as bas64
                 FileInputStream fileInputStreamReader = new FileInputStream(compressedImageFile);
@@ -294,10 +301,10 @@ public class biometric extends HttpServlet {
                 fileInputStreamReader.read(bytes);
                 photo64 = new String(Base64.encodeBase64(bytes), "UTF-8");
                 fileInputStreamReader.close();
-                System.out.println("the compressed image base64 is : " + photo64);
-                 FileWriter file1 = new FileWriter("E:\\base_compressed.txt");
-                file1.write(photo64);
-                file1.close();
+//                System.out.println("the compressed image base64 is : " + photo64);
+//                 FileWriter file1 = new FileWriter("E:\\base_compressed.txt");
+//                file1.write(photo64);
+//                file1.close();
 
                 //------------------ end of compression
 //                photo64 = Base64.encodeBase64String(imageBytes);
@@ -309,31 +316,31 @@ public class biometric extends HttpServlet {
             
             
            
-            
-            System.out.println(filePart);
-            if (filePart != null) {
-                // prints out some information for debugging
-                System.out.println(filePart.getName());
-                System.out.println(filePart.getSize());
-                System.out.println(filePart.getContentType());
-//                System.out.println(filePart.getSubmittedFileName());
-                String savedPath = "";
-                // obtains input stream of the upload file
-                inputStream1 = filePart.getInputStream();
-                if (nationalID != null && !(nationalID.isEmpty())) {
-                    bioPath = "http://192.168.235.76:8080/biometric/" + nationalID + ".nist"; // to be accissble from outside 
-                    savedPath = "E:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\biometric\\" + nationalID + ".nist"; // saved locally
-
-                } else {
-                    bioPath = "http://192.168.235.76:8080/biometric/" + issueCountryComposite + ".nist";
-                    savedPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\biometric\\" + issueCountryComposite + ".nist";
-                }
-                Path path = Paths.get(savedPath);
-                Files.deleteIfExists(path);
-                Files.copy(inputStream1, Paths.get(savedPath));
-                inputStream1.close();
-
-            }
+//            
+//            System.out.println(filePart);
+//            if (filePart != null) {
+//                // prints out some information for debugging
+//                System.out.println(filePart.getName());
+//                System.out.println(filePart.getSize());
+//                System.out.println(filePart.getContentType());
+////                System.out.println(filePart.getSubmittedFileName());
+//                String savedPath = "";
+//                // obtains input stream of the upload file
+//                inputStream1 = filePart.getInputStream();
+//                if (nationalID != null && !(nationalID.isEmpty())) {
+//                    bioPath = "http://192.168.235.76:8080/biometric/" + nationalID + ".nist"; // to be accissble from outside 
+//                    savedPath = "E:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\biometric\\" + nationalID + ".nist"; // saved locally
+//
+//                } else {
+//                    bioPath = "http://192.168.235.76:8080/biometric/" + issueCountryComposite + ".nist";
+//                    savedPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\biometric\\" + issueCountryComposite + ".nist";
+//                }
+//                Path path = Paths.get(savedPath);
+//                Files.deleteIfExists(path);
+//                Files.copy(inputStream1, Paths.get(savedPath));
+//                inputStream1.close();
+//
+//            }
 
             Connection Con = null;
             Statement stmt = null, stmt1 = null, stmt2 = null, stmt3 = null;
@@ -345,36 +352,53 @@ public class biometric extends HttpServlet {
             LocalDateTime now = LocalDateTime.now();
             String bio_date = dtf.format(now);
 
-            stmt = Con.createStatement();
-            stmt2 = Con.createStatement();
+        //    stmt = Con.createStatement();
+        //    stmt2 = Con.createStatement();
             stmt3 = Con.createStatement();
             // check if photo already exists
-            System.out.println("national iddddddddddddddddd" + nationalID);
-              ResultSet rs1 = stmt2.executeQuery("select * from mi.clients_data where national_id = '" + nationalID + "' or nationality = '" + nationalID + "' order by request_date desc");
-            if (rs1.first()) {
+//            System.out.println("national iddddddddddddddddd" + nationalID);
+            
+//              ResultSet rs1 = stmt2.executeQuery("select * from mi.clients_data where ( national_id = '" + nationalID + "' or nationality = '" + nationalID + "' ) and requestID = '"+requestID+"'");
+//            if (rs1.first()) {
                   Random random = new Random();
             String medical_check_up_ID = Integer.toString(random.nextInt());
-                System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"+medical_check_up_ID);
-                System.out.println("ana hena ya jhoneeeeeeeeeeeeeeeeeeeeee");
-                System.out.println(photo64);
-                String sql = "update mi.clients_data set photo = '"+photo64+"' where national_id = '" + nationalID + "' or nationality = '" + nationalID + "';";
+              //  System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"+medical_check_up_ID);
+              //  System.out.println("ana hena ya jhoneeeeeeeeeeeeeeeeeeeeee");
+               // System.out.println(photo64);
+                String sql = "update mi.clients_data set photo = '"+photo64+"' , MedicalCheckupID = '"+medical_check_up_ID+"' where requestID = '"+requestID+"';";
                 int update = stmt3.executeUpdate(sql);
-                      out.println("<script type='text/javascript'>");
+                   if(update > 0){   
+                       out.println("<script type='text/javascript'>");
 
             out.println("alert('تم تعديل الصورة');");
 
             out.println("location='inquiry.jsp';");
 
             out.println("</script>");
-                stmt2.close();
+//                stmt2.close();
             stmt3.close();
+            Con.close();
             return ;
             }
-          
+            
+            else{
+            out.println("<script type='text/javascript'>");
+
+            out.println("alert('فشل في تعديل الصورة يرجى المحاولة مرة أخرى');");
+
+            out.println("location='inquiry.jsp';");
+
+            out.println("</script>");
+                  stmt3.close();
+            Con.close();
+             return ;
+            }
+         
+//        }
             // System.err.println(transID);
 
             // check if this client is already exists 
-            stmt1 = Con.createStatement();
+//            stmt1 = Con.createStatement();
 
 //            ResultSet rs = stmt1.executeQuery("select * from mi.clients_data where national_id = '" + nationalID + "' or nationality = '" + theCountry + "' order by request_date desc");
 //            if (rs.first()) {
@@ -384,27 +408,55 @@ public class biometric extends HttpServlet {
 //              byte[] img64 = Base64.encode(ba);
 //                photo64 = new String(ba);
 // create medical check up ID
-            Random random = new Random();
-            String medical_check_up_ID = Integer.toString(random.nextInt());
-            System.out.println("Medical check up ID is : " + medical_check_up_ID);
-            System.out.println("imgge valueeeeeeeeeeee : " + photo64);
-            if (nationalID != null) {
-                System.out.println("egyptian king in biometric ");
-                System.out.println("national ID is " + nationalID);
-                // int updated = stmt.executeUpdate("update mi.clients_data set bioFile = '" + bioFile + "' , bioDate = '" + bio_date + "' ,  requestID = '" + requestID + "' , MedicalCheckupID = '" + medical_check_up_ID + "'  where national_id = '" + nationalID + "' ");
-                int updated = stmt.executeUpdate("insert into mi.clients_data (bioFile,bioDate,requestID,MedicalCheckupID,photo,national_id,Name) values ('" + bioFile + "' , '" + bio_date + "' , '" + requestID + "' , '" + medical_check_up_ID + "' , '" + photo64 + "' , '" + nationalID + "' , '" + FullName + "')");
-                if (!(updated > 0)) {
-                    out.println("can not update biometric");
-                }
-            } else if (passNo != null && theCountry != null) {
-                // sql = "update mi.clients_data set bioFile = "+bioFile+" where PassportNo = '"+passNo+"' and nationality = '"+theCountry+"' order by request_date desc";
-                int updated = stmt.executeUpdate("insert into mi.clients_data (bioFile,bioDate,requestID,MedicalCheckupID,photo,foreignComposite,Name) values ('" + bioFile + "' , '" + bio_date + "' , '" + requestID + "' , '" + medical_check_up_ID + "' , '" + photo64 + "' , '" + theCountry + passNo + "' , '" + FullName + "')");
-                if (!(updated > 0)) {
-                    out.println("can not update biometric");
-                }
-            }
+//            Random random = new Random();
+//            String medical_check_up_ID = Integer.toString(random.nextInt());
+//            System.out.println("Medical check up ID is : " + medical_check_up_ID);
+//            System.out.println("imgge valueeeeeeeeeeee : " + photo64);
+//            //check if agnby
+//            String masryORagnby = "";
+//            
+//            if(agnby) masryORagnby = "nationality";
+//            else masryORagnby = "national_id";
+//            if (nationalID != null) {
+//                System.out.println("egyptian king in biometric ");
+//                System.out.println("national ID is " + nationalID);
+//                // int updated = stmt.executeUpdate("update mi.clients_data set bioFile = '" + bioFile + "' , bioDate = '" + bio_date + "' ,  requestID = '" + requestID + "' , MedicalCheckupID = '" + medical_check_up_ID + "'  where national_id = '" + nationalID + "' ");
+//                
+//               
+//                int updated = stmt.executeUpdate("insert into mi.clients_data (bioFile,bioDate,requestID,MedicalCheckupID,photo,"+masryORagnby+",Name) values ('" + bioFile + "' , '" + bio_date + "' , '" + requestID + "' , '" + medical_check_up_ID + "' , '" + photo64 + "' , '" + nationalID + "' , '" + FullName + "')");
+//                      System.out.println("walaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " + updated);                  
+//                      
+//                if (updated > 0) {
+//                                      out.println("<script type='text/javascript'>");
+//
+//            out.println("alert('تم حفظ الصوره');");
+//
+//            out.println("location='inquiry.jsp';");
+//
+//            out.println("</script>");
+//                     
+//             return ;
+//                }
+//                else{
+//        out.println("<script type='text/javascript'>");
+//
+//            out.println("alert('فشل في تعديل الصورة يرجى المحاولة مرة أخرى');");
+//
+//            out.println("location='inquiry.jsp';");
+//
+//            out.println("</script>");
+//            return;
+//                }
+//            }
+//            else if (passNo != null && theCountry != null) {
+//                // sql = "update mi.clients_data set bioFile = "+bioFile+" where PassportNo = '"+passNo+"' and nationality = '"+theCountry+"' order by request_date desc";
+//                int updated = stmt.executeUpdate("insert into mi.clients_data (bioFile,bioDate,requestID,MedicalCheckupID,photo,foreignComposite,Name) values ('" + bioFile + "' , '" + bio_date + "' , '" + requestID + "' , '" + medical_check_up_ID + "' , '" + photo64 + "' , '" + theCountry + passNo + "' , '" + FullName + "')");
+//                if (!(updated > 0)) {
+//                    out.println("can not update biometric");
+//                }
+//            }
 
-            stmt.close();
+//            stmt.close();
 //            } else {
 //                // insert new record with biometric
 //
@@ -422,14 +474,14 @@ public class biometric extends HttpServlet {
 //                }
 //
 //            }
-            ResultSet rs = stmt1.executeQuery("select photo from mi.clients_data where national_id = '" + nationalID + "' or nationality = '" + nationalID + "' order by request_date desc");
-            if (rs.first()) {
-                Blob b = rs.getBlob("photo");
-                byte[] ba = b.getBytes(1, (int) b.length());
-                photo64 = new String(ba);
-                System.out.println("imgge valueeeeeeeeeeee : " + photo64);
-            }
-            stmt1.close();
+//            ResultSet rs = stmt1.executeQuery("select photo from mi.clients_data where national_id = '" + nationalID + "' or nationality = '" + nationalID + "' order by request_date desc");
+//            if (rs.first()) {
+//                Blob b = rs.getBlob("photo");
+//                byte[] ba = b.getBytes(1, (int) b.length());
+//                photo64 = new String(ba);
+//                System.out.println("imgge valueeeeeeeeeeee : " + photo64);
+//            }
+//            stmt1.close();
             // check if this client has a biometric only not medical 
 //            if (ServiceType.equals("2")) {
 //                // send notification to 3s 
@@ -455,13 +507,7 @@ public class biometric extends HttpServlet {
 //                }
 //            }
 
-            out.println("<script type='text/javascript'>");
-
-            out.println("alert('تم حفظ الصوره');");
-
-            out.println("location='inquiry.jsp';");
-
-            out.println("</script>");
+          
 
         }
     }

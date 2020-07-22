@@ -52,6 +52,7 @@ public class login extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ClassNotFoundException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
         try (PrintWriter out = response.getWriter()) {
 
             try {
@@ -63,11 +64,17 @@ public class login extends HttpServlet {
             getcon c = new getcon();
             System.out.println("hereeeee");
             Connection Con = c.myconnection();
+            Statement stmt = null;
             try {
 
                 boolean flag = false;
                 String email = request.getParameter("mail");
                 String password = request.getParameter("pass");
+                String theUnit = request.getParameter("theUnit");
+
+                if ("وحدة مرور مدينة نصر".equals(theUnit)) {
+                    System.out.println("walaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                }
                 String type = "";
                 System.out.println("user name : " + email);
                 System.out.println("type : " + type);
@@ -82,7 +89,7 @@ public class login extends HttpServlet {
 //                else {
                 //  sql = "select * from mi.oculist_users where USERNAME = '" + email + "' and PASSWORD = '" + password + "'";
 //                }
-                Statement stmt = Con.createStatement();
+                stmt = Con.createStatement();
                 //SELECT `TRAFFIC_UNIT` , `NATIONAL_ID` , `USERNAME` ,  CAST(AES_DECRYPT(`PASSWORD`, 'secret') AS CHAR)  FROM `users` WHERE CAST(AES_DECRYPT(`PASSWORD`, 'secret') AS CHAR) = 'admin'  and `USERNAME` = 'hazem';
                 ResultSet RS = stmt.executeQuery(sql);
 
@@ -101,14 +108,14 @@ public class login extends HttpServlet {
 
                     String userName = RS.getString("USERNAME");
                     String name = RS.getString("NAME");
-                    String trafficUnit = RS.getString("TRAFFIC_UNIT");
-                    String trafficUnitCode = RS.getString("TRAFFIC_UNIT_CODE");
+//                    String trafficUnit = RS.getString("TRAFFIC_UNIT");
+//                    String trafficUnitCode = RS.getString("TRAFFIC_UNIT_CODE");
 
                     session.setAttribute("USERNAME", userName);
                     session.setAttribute("NAME", name);
-                    session.setAttribute("TRAFFIC_UNIT", trafficUnit);
-                    session.setAttribute("TRAFFIC_UNIT_CODE", trafficUnitCode);
-                    session.setAttribute("TRAFFIC_UNIT_NAME", trafficUnit);
+                    session.setAttribute("TRAFFIC_UNIT", theUnit);
+                    session.setAttribute("TRAFFIC_UNIT_CODE", theUnit);
+                    session.setAttribute("TRAFFIC_UNIT_NAME", theUnit);
                     session.setAttribute("NATIONAL_ID", nationalId);
                     session.setAttribute("TYPE", type);
                     session.setAttribute("SESSION_ID", session.getId());
@@ -128,39 +135,38 @@ public class login extends HttpServlet {
 //                               RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/test.jsp");
 //                               dispatcher.forward(request, response);
                     System.out.println("type name " + type);
-                       RequestDispatcher requestDispatcher;
-                        requestDispatcher = request.getRequestDispatcher("inquiry.jsp");
-                          requestDispatcher.forward(request, response);
-
+                    RequestDispatcher requestDispatcher;
+                    requestDispatcher = request.getRequestDispatcher("inquiry.jsp");
+                    requestDispatcher.forward(request, response);
 
                 } else {
                     sql = "select * from mi.internist_users where USERNAME = '" + email + "' and PASSWORD = '" + password + "'";
                     RS = stmt.executeQuery(sql);
-                     if (RS.first()) {
-                    type = "internist";
+                    if (RS.first()) {
+                        type = "internist";
 //                                 //response.sendRedirect("courses.jsp");
-                    HttpSession session = request.getSession(true);
+                        HttpSession session = request.getSession(true);
 //                                // session.setMaxInactiveInterval(10); ems7ly el session b3d 10 sawany
-                    if (session.isNew() == false) { //el session d adema ?
-                        session.invalidate();
-                        session = request.getSession(true);
+                        if (session.isNew() == false) { //el session d adema ?
+                            session.invalidate();
+                            session = request.getSession(true);
 
-                    }
-                    String nationalId = RS.getString("NATIONAL_ID");
+                        }
+                        String nationalId = RS.getString("NATIONAL_ID");
 
-                    String userName = RS.getString("USERNAME");
-                    String name = RS.getString("NAME");
-                    String trafficUnit = RS.getString("TRAFFIC_UNIT");
-                    String trafficUnitCode = RS.getString("TRAFFIC_UNIT_CODE");
+                        String userName = RS.getString("USERNAME");
+                        String name = RS.getString("NAME");
+                        String trafficUnit = RS.getString("TRAFFIC_UNIT");
+                        String trafficUnitCode = RS.getString("TRAFFIC_UNIT_CODE");
 
-                    session.setAttribute("USERNAME", userName);
-                    session.setAttribute("NAME", name);
-                    session.setAttribute("TRAFFIC_UNIT", trafficUnit);
-                    session.setAttribute("TRAFFIC_UNIT_CODE", trafficUnitCode);
-                    session.setAttribute("TRAFFIC_UNIT_NAME", trafficUnit);
-                    session.setAttribute("NATIONAL_ID", nationalId);
-                    session.setAttribute("TYPE", type);
-                    session.setAttribute("SESSION_ID", session.getId());
+                        session.setAttribute("USERNAME", userName);
+                        session.setAttribute("NAME", name);
+                        session.setAttribute("TRAFFIC_UNIT", theUnit);
+                        session.setAttribute("TRAFFIC_UNIT_CODE", theUnit);
+                        session.setAttribute("TRAFFIC_UNIT_NAME", theUnit);
+                        session.setAttribute("NATIONAL_ID", nationalId);
+                        session.setAttribute("TYPE", type);
+                        session.setAttribute("SESSION_ID", session.getId());
 //                        if(type.equalsIgnoreCase("oculist")){
 //                               RequestDispatcher requestDispatcher;
 //                         requestDispatcher = request.getRequestDispatcher("oculist.jsp");
@@ -176,73 +182,67 @@ public class login extends HttpServlet {
 //                          requestDispatcher.forward(request, response);
 //                               RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/test.jsp");
 //                               dispatcher.forward(request, response);
-                    System.out.println("type name " + type);
-                          RequestDispatcher requestDispatcher;
+                        System.out.println("type name " + type);
+                        RequestDispatcher requestDispatcher;
                         requestDispatcher = request.getRequestDispatcher("internist.jsp");
-                          requestDispatcher.forward(request, response);
+                        requestDispatcher.forward(request, response);
 
-
-                }
-                     else{
-                      sql = "select * from mi.oculist_users where USERNAME = '" + email + "' and PASSWORD = '" + password + "'";
-                      RS = stmt.executeQuery(sql);
+                    } else {
+                        sql = "select * from mi.oculist_users where USERNAME = '" + email + "' and PASSWORD = '" + password + "'";
+                        RS = stmt.executeQuery(sql);
 
 //ResultSet RS =stmt.executeQuery("SELECT * FROM `mi`.`users` WHERE CAST(AES_DECRYPT(`PASSWORD`, 'secret') AS CHAR) = '"+password+"'  and `USERNAME` = '"+email+"';");
-                if (RS.first()) {
-                    type = "oculist";
+                        if (RS.first()) {
+                            type = "oculist";
 //                                 //response.sendRedirect("courses.jsp");
-                    HttpSession session = request.getSession(true);
+                            HttpSession session = request.getSession(true);
 //                                // session.setMaxInactiveInterval(10); ems7ly el session b3d 10 sawany
-                    if (session.isNew() == false) { //el session d adema ?
-                        session.invalidate();
-                        session = request.getSession(true);
+                            if (session.isNew() == false) { //el session d adema ?
+                                session.invalidate();
+                                session = request.getSession(true);
+
+                            }
+                            String nationalId = RS.getString("NATIONAL_ID");
+
+                            String userName = RS.getString("USERNAME");
+                            String name = RS.getString("NAME");
+                            String trafficUnit = RS.getString("TRAFFIC_UNIT");
+                            String trafficUnitCode = RS.getString("TRAFFIC_UNIT_CODE");
+
+                            session.setAttribute("USERNAME", userName);
+                            session.setAttribute("NAME", name);
+                            session.setAttribute("TRAFFIC_UNIT", theUnit);
+                            session.setAttribute("TRAFFIC_UNIT_CODE", theUnit);
+                            session.setAttribute("TRAFFIC_UNIT_NAME", theUnit);
+                            session.setAttribute("NATIONAL_ID", nationalId);
+                            session.setAttribute("TYPE", type);
+                            session.setAttribute("SESSION_ID", session.getId());
+
+                            System.out.println("type name " + type);
+                            RequestDispatcher requestDispatcher;
+                            requestDispatcher = request.getRequestDispatcher("oculist.jsp");
+                            requestDispatcher.forward(request, response);
+
+                        } else {
+                            out.println("<script type='text/javascript'>");
+
+                            out.println("alert(' Wrong Email or Password !');");
+
+                            out.println("location='index.html';");
+
+                            out.println("</script>");
+
+                        }
 
                     }
-                    String nationalId = RS.getString("NATIONAL_ID");
 
-                    String userName = RS.getString("USERNAME");
-                    String name = RS.getString("NAME");
-                    String trafficUnit = RS.getString("TRAFFIC_UNIT");
-                    String trafficUnitCode = RS.getString("TRAFFIC_UNIT_CODE");
-
-                    session.setAttribute("USERNAME", userName);
-                    session.setAttribute("NAME", name);
-                    session.setAttribute("TRAFFIC_UNIT", trafficUnit);
-                    session.setAttribute("TRAFFIC_UNIT_CODE", trafficUnitCode);
-                    session.setAttribute("TRAFFIC_UNIT_NAME", trafficUnit);
-                    session.setAttribute("NATIONAL_ID", nationalId);
-                    session.setAttribute("TYPE", type);
-                    session.setAttribute("SESSION_ID", session.getId());
-
-                    System.out.println("type name " + type);
-                       RequestDispatcher requestDispatcher;
-                        requestDispatcher = request.getRequestDispatcher("oculist.jsp");
-                          requestDispatcher.forward(request, response);
-
-
-                }
-                else{
-                      out.println("<script type='text/javascript'>");
-
-                    out.println("alert(' Wrong Email or Password !');");
-
-                    out.println("location='index.html';");
-
-                    out.println("</script>");
-         
-                }
-                     
-                     
-                     
-                     
-                     }
-              
                     //response.sendRedirect("index.html"); 
                 }
 
             } catch (SQLException ex) {
                 Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
+                stmt.close();
                 Con.close();
             }
 

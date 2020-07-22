@@ -4,9 +4,9 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<html  lang="en-GB">
+<html>
     <head>
-
+       
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -29,6 +29,7 @@
 
     </head>
     <body>
+       
         <input type="hidden" id="traffic_unit_code" value="<%= request.getSession().getAttribute("TRAFFIC_UNIT_CODE").toString()%>" />
         <div class="site-wrap">
 
@@ -151,7 +152,22 @@
                                     <input onblur="getName()" name="transID" type="text" id="nid" class="form-control" required="يرجاء ملئ هذا الحقل">
                                 </div>
                             </div>
+                            
+                            
+              <div style="display: block" id="requestIDsDiv" class="row form-group">
 
+                                <div class="col-md-12">
+                                    <label class="text-black" for="subject">رقم المعاملة</label> 
+                                    <select id="requestIDsID"  class="form-control mdb-select colorful-select dropdown-primary"   name="requestIDs"   required="يرجاء ملئ هذا الحقل">
+<!--                                        <option disabled selected value>الحالة الطبية</option>-->
+                   
+
+                                    </select>
+
+                                </div>
+                            </div>
+                            
+                            
                             <div class="row form-group">
 
                                 <div class="col-md-12">
@@ -248,13 +264,8 @@
                         <form method="get"  action="oculist" class="p-5 bg-white">
 
                             <center><h2  class="h4 text-black mb-5">كشف الرمد</h2> </center>
-                            <div class="row form-group">
-
-                                <div class="col-md-12">
-                                    <label class="text-black" for="email">رقم جواز السفر</label> 
-                                    <input name="passNo" type="text" id="passId" class="form-control" required="يرجاء ملئ هذا الحقل">
-                                </div>
-                            </div>
+                                           <center><div id="wait" class="bg-light" style="display:none;"><img src='demo_wait.gif'  /><br>..جاري تحميل البيانات </div>
+                    </center>
                             <div style="display: block" id="CoountryDivID" class="row form-group">
 
                                 <div class="col-md-12">
@@ -266,7 +277,7 @@
                                             stmt2 = Con.createStatement();
                                             ResultSet rs2 = stmt2.executeQuery("select * from mi.passport_issue_country");
                                             while (rs2.next()) {
-                                        %><option value="<%= rs2.getString("lookUp_ID")%>"><%= rs2.getString("description")%></option><%
+                                        %><option value="<%= rs2.getString("description")%>"><%= rs2.getString("description")%></option><%
                                             }
                                             stmt2.close();
                                         %>
@@ -276,6 +287,26 @@
                                 </div>
                             </div>
 
+                                        
+                                              <div class="row form-group">
+
+                                <div class="col-md-12">
+                                    <label class="text-black" for="email">رقم جواز السفر</label> 
+                                    <input onblur="getName()" name="passNo" type="text" id="passId" class="form-control" required="يرجاء ملئ هذا الحقل">
+                                </div>
+                            </div>
+                                        
+                                                   <div style="display: block" id="requestIDsDivFor" class="row form-group">
+
+                                <div class="col-md-12">
+                                    <label class="text-black" for="subject">رقم المعاملة</label> 
+                                    <select id="requestIDsIDFor"  class="form-control mdb-select colorful-select dropdown-primary"   name="requestIDs"   required="يرجاء ملئ هذا الحقل">
+<!--                                        <option disabled selected value>الحالة الطبية</option>-->
+                                    </select>
+
+                                </div>
+                            </div>
+                                        
                             <div class="row form-group">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label class="text-black" for="fname">العين اليسرى</label>
@@ -437,87 +468,66 @@
 
             }
 
-            function getName() {
+            function getName(){
+                $("#wait").css("display", "block");
                 var nid = document.getElementById("nid").value;
+                 var passNo = document.getElementById("passId").value;
+                  var CountryID = document.getElementById("CountryID").value;
+                var select;
+                if(nid !== '' && nid !== null)
+                {
+                     select = document.getElementById('requestIDsID');
+                            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                       $("#wait").css("display", "none");
+//                      alert('national ID');
+//                      alert(this.responseText.toString());
+                  //  document.getElementById("citizenNameID").value = this.responseText;
+                    var myObj = JSON.parse(this.responseText.toString());
+//                    alert(myObj);
 
+              for (var i = 0; i<myObj.requestIDs.length; i++){
+                  var opt = document.createElement('option');
+//                  alert(myObj.requestIDs[i]);
+                  opt.value = myObj.requestIDs[i];
+                  opt.innerHTML = myObj.requestIDs[i];
+                  select.appendChild(opt);
+                                          }
+                                document.getElementById("citizenNameID").value = myObj.name;          
+                  }
+                };
+                xhttp.open("GET", "/API/getName?NationalID="+nid, true);
+                xhttp.send();
+                }
+                
+                
+                else if((passNo !== '' && CountryID !== '') && (passNo !== null && CountryID !== null))
+                {
+                      select = document.getElementById('requestIDsIDFor');
+                              var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                       $("#wait").css("display", "none");
+//                      alert(this.responseText.toString());
+                  //  document.getElementById("citizenNameID").value = this.responseText;
+                    var myObj = JSON.parse(this.responseText.toString());
+//                    alert(myObj);
 
-//                var now = new Date();
-//                var month = now.getMonth() + 1;
-//                //               var from = "" + now.getFullYear() + "-" + month + "-" + now.getUTCDate();
-//                //var to = "" + now.getFullYear() + "-" + month + "-" + now.getUTCDate()+1;
-//                var from = "2020-01-01";
-//                var to = "2026-02-27";
-//                var trafficUnit = document.getElementById("traffic_unit_code").value;
-//                var params = JSON.stringify({
-//                    "header": {
-//                        "version": "1.0",
-//                        "category": "request",
-//                        "service": " TIT_Medical_Inquiry",
-//                        "timestamp": "03-09-2018 13:19",
-//                        "tid": "594f2c57-e0d6-4311-87ffac491c4337dd"
-//                    },
-//                    "body": {
-//                        "To": to,
-//                        "From": from,
-//                        "TrafficUnit": trafficUnit
-//                    }
-//                }
-//                );
-////alert(params);
-//                // var params = '{ "body" : ' +'{ "From":'+from+' , "To":'+to+' , "TrafficUnit":'+trafficUnit+' }}';
-//                // var params = "From="+from+"&To="+to+"&TrafficUnit="+trafficUnit;
-//                var xhttp = new XMLHttpRequest();
-//
-//                xhttp.onreadystatechange = function () {
-//                    if (this.readyState == 4 && this.status == 200) {
-//                        //alert(this.responseText.toString());
-//                        var myObj = JSON.parse(this.responseText);
-//                        //remove current queue to make a new one 
-//
-//                        // loop for all requests jsons
-//                        for (let i = 0; i < myObj.body.requests.length; i++) {
-//                            var nationalID = myObj.body.requests[i].nationalID;
-//                            if (nationalID == nid) {
-//
-//                                var fName = myObj.body.requests[i].fName;
-//                                var mName = myObj.body.requests[i].mName;
-//                                var lName = myObj.body.requests[i].lName;
-//                                var exName = myObj.body.requests[i].exName;
-//
-//
-//
-//
-//                                var fullName = fName + " " + mName + " " + lName + " " + exName;
-//                                document.getElementById("citizenNameID").value = fullName;
-//
-//                            }
-//                        }
-//                    }
-//                };
-//
-//                xhttp.open("POST", "http://192.168.235.50/drvintegration_test/API/MedicalCheckup/GetAllRequest?", true);
-//
-//                // xhttp.open("POST", "/API/MedicalCheckup/GetAllRequest?", true);
-//                xhttp.setRequestHeader('Content-type', 'application/json;charset=utf-8');
-//
-//                xhttp.send(params);
-
-
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("citizenNameID").value = this.responseText;
-    }
-  };
-  xhttp.open("GET", "/API/getName?NationalID="+nid, true);
-  xhttp.send();
-
-
-
-
-
-            }
-
+              for (var i = 0; i<myObj.requestIDs.length; i++){
+                  var opt = document.createElement('option');
+//                  alert(myObj.requestIDs[i]);
+                  opt.value = myObj.requestIDs[i];
+                  opt.innerHTML = myObj.requestIDs[i];
+                  select.appendChild(opt);
+                                          }
+                                document.getElementById("citizenNameIDFor").value = myObj.name;          
+                  }
+                };
+                xhttp.open("GET", "/API/getName?theCountry="+CountryID+"&passNo="+passNo, true);
+                xhttp.send();
+                }
+ }
             function goHome() {
 
                 document.getElementById("selectEF").style.display = "block";

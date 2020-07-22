@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -41,22 +43,55 @@ public class getName extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             String nid = request.getParameter("NationalID");
-       
-            System.out.println("niddddddddddddddddd" + nid);
-            String res = "";
+            String CountryID = request.getParameter("theCountry");
+            String passNo = request.getParameter("passNo");
+
+//            System.out.println("niddddddddddddddddd" + nid);
+//            System.out.println("CountryIDDDDDDDDDDD" + CountryID);
+//            System.out.println("passNoooooooooooooo" + passNo);
+            String name = "";
+            List<String> requestIds = new ArrayList<String>();
             getcon c = new getcon();
-            System.out.println("getNameeeeeeeeeeeeeeeee");
+          //  System.out.println("getNameeeeeeeeeeeeeeeee");
             Connection Con = c.myconnection();
             Statement stmt = Con.createStatement();
-            String qry = "select ApplicantName from `paymentnotify` where `NationalID` = '" + nid + "'";
+//               boolean agnby = false;
+//               String agnbyOrMasry = "";
+//            if(!nid.matches("[0-9]+")){
+//                agnbyOrMasry = "nationality";
+//                System.out.println("agnbyyyyyyyyyyyyyyyyyyy");
+//            agnby = true;
+//            }
+//            else{
+//             agnbyOrMasry = "NationalID";
+//            }
+            String qry = "";
+            if (nid != null) {
+                 System.out.println("masry query to get name and request Ids");
+                qry = "select * from `clients_data` where `national_id` = '" + nid + "'";
+            } else if (CountryID != null && passNo != null) {
+                System.out.println("agnaby query to get name and request Ids");
+                qry = "select * from `clients_data` where `PassportIssueCountry` = '" + CountryID + "' and PassportNo = '"+passNo+"'";
+            }
+          
+        //    String qry = "select * from `paymentnotify` where 1";
             ResultSet rs = stmt.executeQuery(qry);
             System.out.println(rs.toString());
-            if (rs.first()) {
-                res = rs.getString("ApplicantName");
-                System.out.println(res);
+//            System.out.println(rs.getMetaData());
+            while (rs.next()) {
+                name = rs.getString("Name");
+                System.out.println(".add - > " + rs.getString("requestID"));
+                requestIds.add(rs.getString("requestID"));
             }
-            out.print(res);
+             System.out.println(name);
+             System.out.println(requestIds.toString());
+             String requests = requestIds.toString();
+             stmt.close();
+             Con.close();
+            out.print("{\"name\":\""+name+"\",\"requestIDs\":"+requests+"}");
+           
         }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -73,6 +108,7 @@ public class getName extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(getName.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {

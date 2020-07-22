@@ -62,7 +62,7 @@
                         </div>
 
                     </div>
-                </div> 
+                </div>
             </div>
             <header class="site-navbar py-4 bg-white" role="banner">
 
@@ -109,13 +109,13 @@
 
 
 
-        <!--        <div id="selectEF" class="site-blocks-cover overlay" style="background-image: url(temp1/images/hero_1.jpg);display: 
+        <!--        <div id="selectEF" class="site-blocks-cover overlay" style="background-image: url(temp1/images/hero_1.jpg);display:
                      block" data-aos="fade" data-stellar-background-ratio="0.5">
                     <div class="container">
                         <div class="row align-items-center justify-content-center text-center">
-        
+
                             <div class="col-md-12" data-aos="fade-up" data-aos-delay="400">
-        
+
                                 <div class="row justify-content-center mb-4">
                                     <div class="col-md-8 text-center">
                                         <h1>برجاء اختيار هوية المواطن</h1>
@@ -125,15 +125,15 @@
                                             <a class="btn-primary btn-block btn-md" onclick="showEgy()" style="background:#d86b2a;margin: auto;
                                                width: 50%;
                                                padding: 10px;height: 80px ; width: 500px;font-size: 30px;color: white;:hover {background: yellow}">مصري</a>
-        
+
                                             <br> <br>
-        
+
                                             <a style="background-color:#d86b2a;margin: auto;
                                                width: 50%;
                                                padding: 10px;height: 80px ; width: 500px;font-size: 30px;color: white" onclick="showFor()" class="btn-primary btn-block btn-md">أجنبي</a></div>
                                     </div>
                                 </div>
-        
+
                             </div>
                         </div>
                     </div>
@@ -150,26 +150,35 @@
                     <div style="display: block;float: right" id="BackBtn"  class="p-4 mb-3 bg-light">
                         <!--              <h3 class="h5 text-black mb-3">More Info</h3>-->
 
-                        <div >   <input style="border-radius: 20px;text-align: right" id="myInput" onkeyup="myFunction()"  type="number" placeholder="بحث بالرقم القومي"></div> 
+                        <!--                        <div >   <input style="border-radius: 20px;text-align: right" id="myInput" onkeyup="myFunction()"  type="number" placeholder="بحث بالرقم القومي"></div>
+                                                <br><div >   <input style="border-radius: 20px;text-align: right" id="myInput1" onkeyup="myFunctionFilterRequestID()"  type="number" placeholder="بحث بـرقم المعـاملة"></div>
+                                                <br><div >   <input style="border-radius: 20px;text-align: right" id="myInput2" onkeyup="myFunctionFilterName()"  type="text" placeholder="بحث بالإسم"></div>
+                        -->
+
+                        <div >   <input style="border-radius: 20px;text-align: right" id="myInputNID"  type="number" placeholder="جواز سفر/رقم قومي"></div>
+                        <br><div >   <input style="border-radius: 20px;text-align: right" id="myInputRID"  type="number" placeholder="بحث بـرقم المعـاملة"></div>
+                        <br><div >   <button style="border-radius: 20px;text-align: center;width: 100%" onclick="getClient()" type="text">بحــث</button></div>
+
                     </div>
-                    
-                                <div style="display: block;float: left" id="BackBtn"  class="p-4 mb-3 bg-light">
+
+                    <div style="visibility: hidden;display: block;float: left" id="BackBtn"  class="p-4 mb-3 bg-light">
                         <!--              <h3 class="h5 text-black mb-3">More Info</h3>-->
 
-                        <div ><a onclick="nextClient()" href="" class="btn btn-block btn-danger">العميل التالي</a>   </div> 
+                        <div ><a onclick="nextClient()" href="" class="btn btn-block btn-danger">العميل التالي</a>   </div>
                     </div>
-                          <div style="display: block;float: left" id="BackBtn"  class="p-4 mb-3 bg-light">
+                    <div style="visibility: hidden;display: block;float: left" id="BackBtn"  class="p-4 mb-3 bg-light">
                         <!--              <h3 class="h5 text-black mb-3">More Info</h3>-->
 
-                        <div ><a href="infoData.xhtml" class="btn btn-block btn-danger">صفحة الدور</a>   </div> 
+                        <div ><a href="infoData.xhtml" class="btn btn-block btn-danger">صفحة الدور</a>   </div>
                     </div>
                     <!--                        <input type="hidden" id="traffic_unit_code" data-value="@Request.RequestContext.HttpContext.Session['TRAFFIC_UNIT_CODE']" />-->
-
+                    <center><div id="wait" class="bg-light" style="display:none;"><img src='demo_wait.gif'  /><br>..جاري تحميل البيانات </div>
+                    </center>
 
 
                     <div id="EgyCitizenInfo"  class="p-4 mb-3 bg-light">
 
-                      
+
 
                         <table id="myTable" class="table table-hover text-right">
 
@@ -188,238 +197,39 @@
                                 <th></th>
                             </tr>
 
-                            <%
-                             Connection Con = null;
-                             Statement stmt = null,stmt1 = null;
-                             String sql = "select mi.paymentnotify.ApplicantName , mi.paymentnotify.NationalID , mi.paymentnotify.LicenseType , mi.paymentnotify.TrafficUnit , mi.paymentnotify.TotalAmount , mi.paymentnotify.requestID , mi.paymentnotify.queueNumber from mi.paymentnotify  where  mi.paymentnotify.Date = date(now()) and  mi.paymentnotify.TrafficUnit = '"+ request.getSession().getAttribute("TRAFFIC_UNIT").toString() + "' order by mi.paymentnotify.queueNumber;";
-                            %>
 
-                            <%
-                                         getcon c = new getcon();
-                                                    Con = c.myconnection();
-                                                    stmt = Con.createStatement();
-                                                    stmt1 = Con.createStatement();
-                                                    ResultSet rs = stmt.executeQuery(sql);   
-                                                    while(rs.next()){
-                                                    String requestID = rs.getString("requestID");
-                                                    ResultSet rs1 = stmt1.executeQuery("select * from mi.clients_data where mi.clients_data.requestID = '"+requestID+"';");
-                                                    String internInsp = "";
-                                                    String ocuInsp = "";
-                                                    if(rs1.first()){
-                                                      internInsp = rs1.getString("internal_inspection_result");
-                                                     ocuInsp = rs1.getString("eyes_inspection_result");
-                                                    }
-                                                    String status = "";
-                                           
-                                                    if(internInsp == null) internInsp = "";
-                                                    if(ocuInsp == null) ocuInsp = "";
-                                                   if(internInsp.equals("acc") && ocuInsp.equals("acc")) status = "لائق باطنة و نظر";
-                                                   else if (internInsp.equals("acc") && ocuInsp.equals("nacc")) status = "لائق باطنة و غير لائق نظر";
-                                                    else if (internInsp.equals("nacc") && ocuInsp.equals("acc")) status = "لائق نظر و غير لائق باطنة";
-                                                    else if (internInsp.isEmpty() && ocuInsp.equals("acc")) status = "لائق نظر و في مرحلة الباطنة";
-                                                    else if (internInsp.equals("acc") && ocuInsp.isEmpty()) status = "لائق باطنة و في مرحلة النظر";
-                                                    else if (internInsp.isEmpty() && ocuInsp.isEmpty()) status = "لم يبدأ كشف باطنة أو نظر";
-                                                     else if (internInsp.equals("nacc") && ocuInsp.equals("nacc")) status = "غير لائق باطنة و غير لائق نظر";
-                                            
-                            %>
                             <tr>
-                                <td><%= status %></td>
-                                <td><%= rs.getString("queueNumber") %></td>
-                                <td><%= rs.getString("NationalID") %></td>
-                                <td><%= rs.getString("TotalAmount") %></td>
-                                <td><%= rs.getString("TrafficUnit") %></td>
-                                <td><%= rs.getString("LicenseType") %></td>
-                                <td><%= rs.getString("requestID") %></td>
-                                <td><%= rs.getString("ApplicantName") %></td>
+                                <td id="statusID"></td>
+                                <td id="queueNumberID"></td>
+                                <td id="identity_showID"></td>
+                                <td id="TotalAmountID"></td>
+                                <td id="TrafficUnitID"></td>
+                                <td id="LicenseTypeID"></td>
+                                <td id="requestIDID"></td>
+                                <td id="ApplicantNameID"></td>
                                 <td>
                                     <form method="post" action="/API/biometric.jsp">
-                                        <input type="hidden"  name="QueueNumber" value="<%= rs.getString("queueNumber") %>">
-                                        <input type="hidden" id="nid"  name="nationalID" value="<%= rs.getString("NationalID") %>">
-                                        <input type="hidden"  name="requestID" value="<%= rs.getString("requestID") %>">
-                                        <input type="hidden"  name="FullName" value="<%= rs.getString("ApplicantName") %>">
-                                        <input type="submit" value="إلتقاط الصورة">
+                                        <input id="queueNumberFormID" type="hidden"  name="QueueNumber" value="">
+                                        <input  type="hidden" id="nid"  name="nationalID" value="">
+                                        <input id="requestIDFormID"  type="hidden"  name="requestID" value="">
+                                        <input id="ApplicantNameFormID" type="hidden"  name="FullName" value="">
+                                        <input style="visibility: hidden" id="photoActionID" type="submit" value="">
                                     </form>
                                 </td>
                             </tr>
 
-                            <%
-                             }
 
-                            %>
 
 
                         </table>
-
-                    </div>
-
-
-
-
-                    <div style="display: none" id="ConfirmBtn"  class="p-4 mb-3 bg-white">
-                        <!--              <h3 class="h5 text-black mb-3">More Info</h3>-->
-                        <p>برجــاء تأكيد الطلب</p>
-                        <p><a onclick="saveData()"  class="btn btn-primary btn-md text-white">تأكيــد</a></p>
+                       
                     </div>
 
                 </div>
 
 
-
-                <!--                    <div class="col-md-5">
-                
-                                        <div  class="p-5 bg-white">
-                
-                                            <h2  class="h4 text-black mb-5">إستــعلام بيانات</h2> 
-                
-                                                          <div class="row form-group">
-                                                            <div class="col-md-6 mb-3 mb-md-0">
-                                                                <label class="text-black" for="fname">First Name</label>
-                                                              <input type="text" id="fname" class="form-control">
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                              <label class="text-black" for="lname">Last Name</label>
-                                                              <input type="text" id="lname" class="form-control">
-                                                            </div>
-                                                          </div>
-                
-                                            <div style="display: none" id="EgyDialoug" class="row form-group">
-                
-                                                <div class="col-md-12">
-                                                    <label style="float: right"   class="text-black" for="email">الرقم القومي</label> 
-                                                    <input type="number" id="nid" class="form-control" required>
-                                                </div>
-                                            </div>
-                
-                                            <div style="display: none" id="ForDialoug" class="row form-group">
-                
-                                                <div class="col-md-12">
-                                                    <label style="float: right"   class="text-black" for="email">رقم جواز السفر</label> 
-                                                    <input type="number" id="passId" class="form-control" required>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <label style="float: right"   class="text-black" for="email">البلد</label> 
-                                                    <select class="form-control" type="tel" spellcheck="false" id="cId" name="result" tabindex="2" data-sizePolicy="fixed" data-pintopage="page_fixedLeft" required="يرجاء ملئ هذا الحقل"><option disabled selected value>البلد</option><option value="lib">ليبيا</option>
-                                                        <option value="jord">الاردن</option></select>
-                                                </div>
-                                            </div>
-                
-                                                          <div class="row form-group">
-                                                            
-                                                            <div class="col-md-12">
-                                                              <label class="text-black" for="subject">Subject</label> 
-                                                              <input type="subject" id="subject" class="form-control">
-                                                            </div>
-                                                          </div>
-                
-                                                          <div class="row form-group">
-                                                            <div class="col-md-12">
-                                                              <label class="text-black" for="message">Message</label> 
-                                                              <textarea name="message" id="message" cols="30" rows="7" class="form-control" placeholder="Write your notes or questions here..."></textarea>
-                                                            </div>
-                                                          </div>
-                
-                                            <div class="row form-group">
-                                                <div class="col-md-12">
-                                                    <a onclick="showCustomer()"  class="btn btn-primary btn-md text-white">إستعـــلام</a>
-                                                </div>
-                                            </div>
-                
-                
-                                        </div>
-                                    </div>-->
-
             </div>
         </div>
-        <!--        </div>-->
-
-
-
-        <div style="display: none" id="forForm" class="site-section bg-light">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-7 mb-5">
-
-
-
-                        <form action="#" class="p-5 bg-white">
-
-                            <h2 class="h4 text-black mb-5">Contact Form</h2> 
-
-                            <div class="row form-group">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <label class="text-black" for="fname">First Name</label>
-                                    <input type="text" id="fname" class="form-control" >
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="text-black" for="lname">Last Name</label>
-                                    <input type="text" id="lname" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row form-group">
-
-                                <div class="col-md-12">
-                                    <label class="text-black" for="email">Email</label> 
-                                    <input type="email" id="email" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row form-group">
-
-                                <div class="col-md-12">
-                                    <label class="text-black" for="subject">Subject</label> 
-                                    <input type="subject" id="subject" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    <label class="text-black" for="message">Message</label> 
-                                    <textarea name="message" id="message" cols="30" rows="7" class="form-control" placeholder="Write your notes or questions here..."></textarea>
-                                </div>
-                            </div>
-
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    <input type="submit" value="Send Message" class="btn btn-primary btn-md text-white">
-                                </div>
-                            </div>
-
-
-                        </form>
-                    </div>
-                    <div class="col-md-5">
-
-                        <div class="p-4 mb-3 bg-white">
-                            <p class="mb-0 font-weight-bold">Address</p>
-                            <p class="mb-4">203 Fake St. Mountain View, San Francisco, California, USA</p>
-
-                            <p class="mb-0 font-weight-bold">Phone</p>
-                            <p class="mb-4"><a href="#">+1 232 3235 324</a></p>
-
-                            <p class="mb-0 font-weight-bold">Email Address</p>
-                            <p class="mb-0"><a href="#">youremail@domain.com</a></p>
-
-                        </div>
-
-                        <div class="p-4 mb-3 bg-white">
-                            <h3 class="h5 text-black mb-3">More Info</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa ad iure porro mollitia architecto hic consequuntur. Distinctio nisi perferendis dolore, ipsa consectetur? Fugiat quaerat eos qui, libero neque sed nulla.</p>
-                            <p><a href="#" class="btn btn-primary btn-md text-white">Learn More</a></p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!--        <div class="container" >
-                    <div class="row" style="float: right">
-                        <img style="height: 100px ; width: 140px;" src="logo_titd.png"/>
-                    </div>
-                </div>-->
 
 
 
@@ -428,19 +238,52 @@
 
 
 
-function nextClient(){
-    
-      var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-     // document.getElementById("demo").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("GET", "/API/NextClient", true);
-  xhttp.send();
-    
-    
-}
+            function getClient() {
+                $("#wait").css("display", "block");
+                var nid = document.getElementById("myInputNID").value;
+                var rid = document.getElementById("myInputRID").value;
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        $("#wait").css("display", "none");
+                      //      alert(this.responseText.toString());
+                        var myObj = JSON.parse(this.responseText);
+                        document.getElementById("statusID").innerHTML = myObj.status;
+                        document.getElementById("queueNumberID").innerHTML = myObj.queueNumber;
+                        document.getElementById("identity_showID").innerHTML = myObj.identity_show;
+                        document.getElementById("TotalAmountID").innerHTML = myObj.TotalAmount;
+                        document.getElementById("TrafficUnitID").innerHTML = myObj.TrafficUnit;
+                        document.getElementById("LicenseTypeID").innerHTML = myObj.LicenseType;
+                        document.getElementById("requestIDID").innerHTML = myObj.requestID;
+                        document.getElementById("ApplicantNameID").innerHTML = myObj.ApplicantName;
+                        document.getElementById("nid").value = myObj.identity;
+                        document.getElementById("photoActionID").value = myObj.photoAction;
+                        document.getElementById("queueNumberFormID").value = myObj.queueNumber;
+                        document.getElementById("requestIDFormID").value = myObj.requestID;
+                        document.getElementById("ApplicantNameFormID").value = myObj.ApplicantName;
+                        if (myObj.photoAction !== 'لا يوجد') {
+                            document.getElementById("photoActionID").style.visibility = 'visible';
+                        }
+                    }
+                };
+                xhttp.open("GET", "/API/GetClient?nid=" + nid + "&rid=" + rid, true);
+                xhttp.send();
+
+            }
+
+            function nextClient() {
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // document.getElementById("demo").innerHTML = this.responseText;
+                    }
+                };
+                xhttp.open("GET", "/API/NextClient", true);
+                xhttp.send();
+
+
+            }
 
             function myFunction() {
                 var input, filter, table, tr, td, i, txtValue;
@@ -461,6 +304,47 @@ function nextClient(){
                     }
                 }
             }
+
+            function myFunctionFilterRequestID() {
+                var input, filter, table, tr, td, i, txtValue;
+                input = document.getElementById("myInput1");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("myTable");
+                tr = table.getElementsByTagName("tr");
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[6];
+                    //alert(td);
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+
+            function myFunctionFilterName() {
+                var input, filter, table, tr, td, i, txtValue;
+                input = document.getElementById("myInput2");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("myTable");
+                tr = table.getElementsByTagName("tr");
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[7];
+                    //alert(td);
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+
             function filterByNID() {
                 var nid_filter = document.getElementById("nationalIdFilter").value;
                 if (nid_filter == '') {
@@ -499,7 +383,7 @@ function nextClient(){
                     if (this.readyState == 4 && this.status == 200) {
                         //alert(this.responseText.toString());
                         var myObj = JSON.parse(this.responseText);
-                        //remove current queue to make a new one 
+                        //remove current queue to make a new one
                         var rowCount = table.rows.length;
                         for (var i = rowCount - 1; i > 0; i--) {
                             table.deleteRow(i);
@@ -607,7 +491,7 @@ function nextClient(){
 
 
                                 // var btn = document.createElement("BUTTON");
-                                // btn.innerHTML = 
+                                // btn.innerHTML =
                                 //document.body.appendChild(btn);
                                 // document.getElementById("txt").innerHTML = myObj.body.requests[0].nationalID;
                             }
@@ -662,7 +546,7 @@ function nextClient(){
                     if (this.readyState == 4 && this.status == 200) {
                         //alert(this.responseText.toString());
                         var myObj = JSON.parse(this.responseText);
-                        //remove current queue to make a new one 
+                        //remove current queue to make a new one
                         var rowCount = table.rows.length;
                         for (var i = rowCount - 1; i > 0; i--) {
                             table.deleteRow(i);
@@ -768,7 +652,7 @@ function nextClient(){
 
 
                             // var btn = document.createElement("BUTTON");
-                            // btn.innerHTML = 
+                            // btn.innerHTML =
                             //document.body.appendChild(btn);
                             // document.getElementById("txt").innerHTML = myObj.body.requests[0].nationalID;
                         }
@@ -966,7 +850,7 @@ function nextClient(){
                         alert(' تم التأكيد');
                         goHome();
                         //location='inquiry.jsp';
-                        // } 
+                        // }
 
                         // document.getElementById("widgetu1410_input").value = this.responseText;
 

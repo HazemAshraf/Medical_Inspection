@@ -48,9 +48,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Paymentnotify.findByDate", query = "SELECT p FROM Paymentnotify p WHERE p.date = :date")
     , @NamedQuery(name = "Paymentnotify.findByQueueNumberUsed", query = "SELECT p FROM Paymentnotify p WHERE p.queueNumberUsed = :queueNumberUsed")
     ,@NamedQuery(name = "Paymentnotify.findByDateAndTraffiUnit", query = "SELECT p FROM Paymentnotify p WHERE p.date = :date AND p.trafficUnit = :trafficUnit")
- ,@NamedQuery(name = "Paymentnotify.findByQueueAndTraffiUnit", query = "SELECT p FROM Paymentnotify p WHERE p.queueNumber = :queueNumber AND p.trafficUnit = :trafficUnit")
-
-        ,@NamedQuery(name = "Paymentnotify.findByDateAndRequestID", query = "SELECT p FROM Paymentnotify p WHERE p.date = :date AND p.requestID = :requestID")})
+    ,@NamedQuery(name = "Paymentnotify.findByQueueAndTraffiUnit", query = "SELECT p FROM Paymentnotify p WHERE p.queueNumber = :queueNumber AND p.trafficUnit = :trafficUnit")
+    , @NamedQuery(name = "Paymentnotify.findByDateAndStatusCode", query = "SELECT p FROM Paymentnotify p WHERE p.date = :date AND p.statusCode = :statusCode")
+    ,@NamedQuery(name = "Paymentnotify.findByDateAndRequestID", query = "SELECT p FROM Paymentnotify p WHERE p.date = :date AND p.requestID = :requestID")})
 public class Paymentnotify implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -102,6 +102,11 @@ public class Paymentnotify implements Serializable {
     private String queueNumberUsed;
     @Column(name = "StatusCode")
     private String statusCode;
+    @Column(name = "Medical_total_amount")
+    private String medicalTotalAmount;
+
+    @Column(name = "Type")
+    private String type;
 
     public Paymentnotify() {
     }
@@ -322,6 +327,22 @@ public class Paymentnotify implements Serializable {
 
     public void setStatusCode(String statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getMedicalTotalAmount() {
+        return medicalTotalAmount;
+    }
+
+    public void setMedicalTotalAmount(String medicalTotalAmount) {
+        this.medicalTotalAmount = medicalTotalAmount;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

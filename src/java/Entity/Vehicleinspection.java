@@ -49,9 +49,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Vehicleinspection.findByQueueNumberUsed", query = "SELECT v FROM Vehicleinspection v WHERE v.queueNumberUsed = :queueNumberUsed")
     , @NamedQuery(name = "Vehicleinspection.findByCancel", query = "SELECT v FROM Vehicleinspection v WHERE v.cancel = :cancel")
     , @NamedQuery(name = "Vehicleinspection.findByUsedcancel", query = "SELECT v FROM Vehicleinspection v WHERE v.usedcancel = :usedcancel")
+    , @NamedQuery(name = "Vehicleinspection.findByStatusCode", query = "SELECT v FROM Vehicleinspection v WHERE v.statusCode = :statusCode")
+    , @NamedQuery(name = "Vehicleinspection.findByChassisNumber", query = "SELECT v FROM Vehicleinspection v WHERE v.chassisNumber = :chassisNumber")
     ,@NamedQuery(name = "Vehicleinspection.findByDateAndTraffiUnit", query = "SELECT v FROM Vehicleinspection v WHERE v.date = :date AND v.trafficUnit = :trafficUnit")
     ,@NamedQuery(name = "Vehicleinspection.findByDateAndRequestID", query = "SELECT v FROM Vehicleinspection v WHERE v.date = :date AND v.requestID = :requestID")
-    , @NamedQuery(name = "Vehicleinspection.findByVehicleinspectionamount", query = "SELECT v FROM Vehicleinspection v WHERE v.vehicleinspectionamount = :vehicleinspectionamount")})
+    , @NamedQuery(name = "Vehicleinspection.findByDateAndStatusCode", query = "SELECT v FROM Vehicleinspection v WHERE v.date = :date AND v.statusCode = :statusCode")
+    
+        , @NamedQuery(name = "Vehicleinspection.findByVehicleinspectionamount", query = "SELECT v FROM Vehicleinspection v WHERE v.vehicleinspectionamount = :vehicleinspectionamount")})
 public class Vehicleinspection implements Serializable {
 
     private static final long serialVersionUID = 1L;
