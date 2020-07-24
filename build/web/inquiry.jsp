@@ -155,7 +155,7 @@
                                                 <br><div >   <input style="border-radius: 20px;text-align: right" id="myInput2" onkeyup="myFunctionFilterName()"  type="text" placeholder="بحث بالإسم"></div>
                         -->
 
-                        <div >   <input style="border-radius: 20px;text-align: right" id="myInputNID"  type="number" placeholder="جواز سفر/رقم قومي"></div>
+                        <div >   <input style="border-radius: 20px;text-align: right" id="myInputNID"  type="text" placeholder="جواز سفر/رقم قومي"></div>
                         <br><div >   <input style="border-radius: 20px;text-align: right" id="myInputRID"  type="number" placeholder="بحث بـرقم المعـاملة"></div>
                         <br><div >   <button style="border-radius: 20px;text-align: center;width: 100%" onclick="getClient()" type="text">بحــث</button></div>
 

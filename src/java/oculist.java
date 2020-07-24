@@ -175,7 +175,6 @@ public class oculist extends HttpServlet {
 //        FileWriter file = new FileWriter("E:\\Biometrics\\log_request.txt");
 //        file.write(new Timestamp(System.currentTimeMillis()).toString() + " POST /API/oculist " + POST_PARAMS);
 //        file.close();
-
         URL obj = new URL(POST_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -308,7 +307,7 @@ public class oculist extends HttpServlet {
                 }
                 medical_conditions_sb.append("]");
                 medical_conditions_str = medical_conditions_sb.toString();
-              //  System.out.println(medical_conditions_str);
+                //  System.out.println(medical_conditions_str);
             }
 //             else{
 //             medical_conditions_str = "[]";
@@ -324,7 +323,7 @@ public class oculist extends HttpServlet {
             stmt = Con.createStatement();
             String sql = "";
 
-                sql = "select * from mi.clients_data where requestID = '" + requestID_UI + "'";
+            sql = "select * from mi.clients_data where requestID = '" + requestID_UI + "'";
 
             ResultSet rs = stmt.executeQuery(sql);
             String nationality = "", national_id = "", passport_no = "", passport_expiryDT = "", country = "", client_nameA = "",
@@ -335,30 +334,31 @@ public class oculist extends HttpServlet {
             LocalDateTime now = LocalDateTime.now();
             eye_request_date = dtf.format(now);
             String photo64 = "";
-
+            String eyeInspRes = "";
+            String internInspRes = "";
             if (rs.first()) {
                 //get request information
                 requestID = rs.getString("requestID");
-             //   System.out.println("requestID in oculist is : " + requestID);
+                //   System.out.println("requestID in oculist is : " + requestID);
                 transID = rs.getString("MedicalCheckupID");
                 request_no = rs.getInt("id");
                 request_date = String.valueOf(rs.getTimestamp("request_date"));
                 blood_group = rs.getString("blood_group");
                 // transaction_id = rs.getString("transaction_id");
                 Blob b = rs.getBlob("photo");
-                if(b == null){
-                             out.println("<script type='text/javascript'>");
+                if (b == null) {
+                    out.println("<script type='text/javascript'>");
 
-                out.println("alert('تأكد من إلتقاط صورة');");
-                out.println("location='oculist.jsp';");
-                //request.getRequestDispatcher("Batna/n.jsp").forward(request, response);
-                // out.println("location='Batna/n.jsp';");
-                // out.println ("window.location.href = 'Batna/n.jsp'");
-                out.println("</script>");
-                stmt.close();
-                Con.close();
-                // response.sendRedirect(request.getContextPath() + "/Batna/n.jsp");
-                return;
+                    out.println("alert('تأكد من إلتقاط صورة');");
+                    out.println("location='oculist.jsp';");
+                    //request.getRequestDispatcher("Batna/n.jsp").forward(request, response);
+                    // out.println("location='Batna/n.jsp';");
+                    // out.println ("window.location.href = 'Batna/n.jsp'");
+                    out.println("</script>");
+                    stmt.close();
+                    Con.close();
+                    // response.sendRedirect(request.getContextPath() + "/Batna/n.jsp");
+                    return;
                 }
                 byte[] ba = b.getBytes(1, (int) b.length());
                 photo64 = new String(ba);
@@ -379,7 +379,8 @@ public class oculist extends HttpServlet {
                     country = "";
                 }
                 // get transaction id 
-
+                eyeInspRes = rs.getString("eyes_inspection_result");
+                internInspRes = rs.getString("internal_inspection_result");
             }
             // if(!BioInsp(Con, requestID) || !ImageInsp(Con, requestID)){
 //                       if(!BioInsp(Con, requestID)){
@@ -397,18 +398,14 @@ public class oculist extends HttpServlet {
 //              }
 
             // if(checkDuplicate(Con , transID )){
-            String eyeInspRes = getEyeInspRes(Con, requestID);
-            String internInspRes = getInternInspRes(Con, requestID);
-            String InspRes = InspRes(Con, requestID);
-            if (eyeInspRes == null) {
-                eyeInspRes = "";
-            }
+            //   String eyeInspRes = getEyeInspRes(Con, requestID);
+            //  String internInspRes = getInternInspRes(Con, requestID);
+            //  String InspRes = InspRes(Con, requestID);
+           
 //                if(!(eyeInspRes.equals(result))){
             stmt = Con.createStatement();
             boolean intNotAcc = false;
-            if (internInspRes == null) {
-                internInspRes = "";
-            }
+     
             if (internInspRes.equals("nacc")) {
                 intNotAcc = true;
 
@@ -461,7 +458,7 @@ public class oculist extends HttpServlet {
                     int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
                     //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                     if (res == 0) {
-                       // System.out.println("0");
+                        // System.out.println("0");
 
                         out.println("<script type='text/javascript'>");
 
@@ -474,7 +471,7 @@ public class oculist extends HttpServlet {
 
                     } else if (res == 1) {
                         out.println("there is error in inputs");
-                      //  System.out.println("1");
+                        //  System.out.println("1");
                         out.println("<script type='text/javascript'>");
 
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
@@ -485,7 +482,7 @@ public class oculist extends HttpServlet {
                         return;
                     } else {
                         out.println("otherwise error");
-                      //  System.out.println("unknown error");
+                        //  System.out.println("unknown error");
                         out.println("<script type='text/javascript'>");
 
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
@@ -529,8 +526,8 @@ public class oculist extends HttpServlet {
                         int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
                         //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                         if (res == 0) {
-                         //   System.out.println("0");
-                         //   System.out.println("200 OK response");
+                            //   System.out.println("0");
+                            //   System.out.println("200 OK response");
                             out.println("<script type='text/javascript'>");
 
                             out.println("alert('تم إرسال الكشف الي نظام التراخيص');");
@@ -542,8 +539,8 @@ public class oculist extends HttpServlet {
 
                         } else if (res == 1) {
                             out.println("there is error in inputs");
-                        //    System.out.println("1");
-                       //     System.out.println("Error -> NOT 200 OK response");
+                            //    System.out.println("1");
+                            //     System.out.println("Error -> NOT 200 OK response");
                             out.println("<script type='text/javascript'>");
 
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
@@ -554,8 +551,8 @@ public class oculist extends HttpServlet {
                             return;
                         } else {
                             out.println("otherwise error");
-                         //   System.out.println("not 1 or 0 response error message code");
-                         //   System.out.println("Error -> NOT 200 OK response");
+                            //   System.out.println("not 1 or 0 response error message code");
+                            //   System.out.println("Error -> NOT 200 OK response");
                             out.println("<script type='text/javascript'>");
 
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
@@ -579,7 +576,8 @@ public class oculist extends HttpServlet {
             out.println("</script>");
             stmt.close();
             Con.close();
-           
+            return;
+
 //                }
 //                else{
 //                
@@ -592,7 +590,6 @@ public class oculist extends HttpServlet {
 //             out.println ("</script>");
 //             
 //                }
-
 //            }
 //            
 //            else{

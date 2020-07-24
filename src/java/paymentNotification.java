@@ -63,7 +63,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
  *
  * @author User
  */
-@WebServlet(name = "paymentNotification", urlPatterns = {"/paymentNotification"})
+@WebServlet(name = "paymentNotification", urlPatterns = {"/paymentNotificationnnnnnnn"})
 public class paymentNotification extends HttpServlet {
 
     /**
@@ -159,11 +159,12 @@ public class paymentNotification extends HttpServlet {
         Connection Con = null, Con1 = null;
         Statement stmt, stmt1 = null, stmt2 = null;
         getcon myCon = new getcon();
-
+         Paymentnotify obj = mapper.readValue(rcvd.toString(), Paymentnotify.class);
+  try {
         if (a.equals("TIT_Medical_payment")) {
             String jasperName = "";
             System.out.println("aaaaaaaaaaaaa");
-            Paymentnotify obj = mapper.readValue(rcvd.toString(), Paymentnotify.class);
+           
             if (!PassportIssueCountryCode.equals("")) {
                 List<PassportIssueCountry> passportIssue = entityManager.createNamedQuery("PassportIssueCountry.findByDescription", PassportIssueCountry.class).setParameter("description", PassportIssueCountryCode).getResultList();
                 if (passportIssue.size() > 0) {
@@ -206,7 +207,7 @@ public class paymentNotification extends HttpServlet {
             List<Paymentnotify> listp = entityManager.createNamedQuery("Paymentnotify.findByRequestID", Paymentnotify.class).setParameter("requestID", obj.getRequestID()).getResultList();
             // System.out.println("aaaaaaaaaaaaaaaaaaaaa "+p);
 
-            try {
+          
                 if (listp.size() > 0) {
                     
                                         params.put("totalAmount", totalAmountNormal); // 0
@@ -217,8 +218,9 @@ public class paymentNotification extends HttpServlet {
 
                     //check school rules....
                     stmt = null;
-                    try {
+                
                         Con = myCon.myconnection();
+                        if(Con != null) System.out.println("Database Connection to the localhost done successfully");
                         stmt = Con.createStatement();
                         ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
                         while (rs.next()) {
@@ -243,12 +245,10 @@ public class paymentNotification extends HttpServlet {
                                 break;
                             }
                         }
-                    } catch (Exception e) {
-                        //
-                    } finally {
+                
                         stmt.close();
-                        Con.close();
-                    }
+                    
+                  
 
              
                     obj.setStatusCode("200 OK");
@@ -259,18 +259,19 @@ public class paymentNotification extends HttpServlet {
                                 //check if exist first
                                 
                     getconMedicalServer getcon = new getconMedicalServer();
+                 
                     Con1 = getcon.myconnection();
+                    if(Con1 != null) System.out.println("Database connection to server 76 done successfully");
+                    
                     stmt2 = Con1.createStatement();
-                    ResultSet rs = stmt2.executeQuery("select Name from `mi`.`clients_data` where requestID = '"+obj.getRequestID()+"'");
-                    if(!rs.first()){
+                    ResultSet rs1 = stmt2.executeQuery("select Name from `mi`.`clients_data` where requestID = '"+obj.getRequestID()+"'");
+                    if(!rs1.first()){
                         stmt1 = Con1.createStatement();
                     String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
                     stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
-                    Con1.close();
                     stmt1.close();
-                    stmt2.close();
                     }
-                
+                stmt2.close();
                     //////////
                     
                     
@@ -297,8 +298,8 @@ public class paymentNotification extends HttpServlet {
 
                     //check school rules....
                     stmt = null;
-                    try {
                         Con = myCon.myconnection();
+                        if(Con != null) System.out.println("Database Connection to the localhost server done successfully");
                         stmt = Con.createStatement();
                         ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
                         while (rs.next()) {
@@ -323,12 +324,9 @@ public class paymentNotification extends HttpServlet {
                                 break;
                             }
                         }
-                    } catch (Exception e) {
-                        //
-                    } finally {
+
                         stmt.close();
-                        Con.close();
-                    }
+
 
                     obj.setStatusCode("200 OK");
                     entityManager.getTransaction().begin();
@@ -338,10 +336,11 @@ public class paymentNotification extends HttpServlet {
                     //insert new record with requestID at clients data on 192.168.235.76
                     getconMedicalServer getcon = new getconMedicalServer();
                     Con1 = getcon.myconnection();
+                    if(Con1 != null) System.out.println("Database Connection to server 76 done successfully");
                     stmt1 = Con1.createStatement();
                     String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
                     stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
-                    Con1.close();
+                   
                     stmt1.close();
                     //////////
 
@@ -387,8 +386,7 @@ public class paymentNotification extends HttpServlet {
                 IP = loadedIp;
 
                 stmt = null;
-                try {
-                    Con = myCon.myconnection();
+
                     stmt = Con.createStatement();
                     ResultSet rs = stmt.executeQuery("select * from mi.flybox_medical where 1");
                     while (rs.next()) {
@@ -397,12 +395,9 @@ public class paymentNotification extends HttpServlet {
                             break;
                         }
                     }
-                } catch (Exception e) {
-                    //
-                } finally {
+           
                     stmt.close();
-                    Con.close();
-                }
+             
 
 ////                if (request.getRemoteAddr().toString().contains("192.168.235.55") || request.getRemoteAddr().toString().contains("192.168.235.51")) {
 ////                    IP = "192.168.235.76";
@@ -422,31 +417,37 @@ public class paymentNotification extends HttpServlet {
                 PrintWriter out = response.getWriter();
                 obj1.addProperty("receiptURL", receiptPathResp);
                 out.write(obj1.toString());
-            } catch (Exception e) {
-               // System.out.println("catch block -> " + e.toString());
+            } 
+
+         else {
+            PrintWriter out = response.getWriter();
+            obj1.addProperty("Error Message", "Invalid serviceID");
+            out.write(obj1.toString());
+        }
+    }
+        catch (Exception e) {
+                System.out.println("catch Exception block -> " + e.toString());
                 obj.setStatusCode(e.toString());
                 entityManager.getTransaction().begin();
                 entityManager.persist(obj);
                 entityManager.getTransaction().commit();
                 
                                     //insert new record with requestID at clients data on 192.168.235.76
-                    getconMedicalServer getcon = new getconMedicalServer();
-                    Con1 = getcon.myconnection();
-                    stmt1 = Con1.createStatement();
-                    String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
-                    stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
-                    Con1.close();
-                    stmt1.close();
-                    //////////
+//                    getconMedicalServer getcon = new getconMedicalServer();
+//                    Con1 = getcon.myconnection();
+//                    stmt1 = Con1.createStatement();
+//                    String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
+//                    stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
+//                   stmt1.close();
+//                    Con1.close();
                     
+                    ////////// 
                 response.setStatus(500);
             }
-
-        } else {
-            PrintWriter out = response.getWriter();
-            obj1.addProperty("Error Message", "Invalid serviceID");
-            out.write(obj1.toString());
-        }
+  finally {
+  Con.close();
+  Con1.close();
+  }
 
 //            if (a.equals("TIT_Vehicle_Inspection_payment")) {
 //            Vehicleinspection obj = mapper.readValue(rcvd.toString(), Vehicleinspection.class);

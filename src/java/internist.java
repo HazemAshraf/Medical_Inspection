@@ -344,6 +344,7 @@ public class internist extends HttpServlet {
 
             getcon c = new getcon();
             Con = c.myconnection();
+          
             stmt = Con.createStatement();
             // System.err.println(transID);
             String sql = "";
@@ -359,6 +360,8 @@ public class internist extends HttpServlet {
             LocalDateTime now = LocalDateTime.now();
             internal_request_date = dtf.format(now);
             String photo64 = "";
+            String eyeInspRes = "";
+            String internInspRes = "";
             if (rs.first()) {
                 //get request information
                 requestID = rs.getString("requestID");
@@ -408,6 +411,9 @@ public class internist extends HttpServlet {
                 }
                 // get transaction id
 
+                
+              eyeInspRes =   rs.getString("eyes_inspection_result");
+               internInspRes = rs.getString("internal_inspection_result");
             } 
          
             // if (!BioInsp(Con, requestID) || !ImageInsp(Con, requestID)) {
@@ -427,20 +433,20 @@ public class internist extends HttpServlet {
 
             // if(checkDuplicate(Con , transID )){
           //  System.out.println("check duplicate");
-            String eyeInspRes = getEyeInspRes(Con, requestID);
+           // String eyeInspRes = getEyeInspRes(Con, requestID);
          //   System.out.println(eyeInspRes);
-            String internInspRes = getInternInspRes(Con, requestID);
-            String InspRes = InspRes(Con, requestID);
-            if (internInspRes == null) {
-                internInspRes = "";
-            }
+          //  String internInspRes = getInternInspRes(Con, requestID);
+//            String InspRes = InspRes(Con, requestID);
+//            if (internInspRes == null) {
+//                internInspRes = "";
+//            }
             //  System.out.println("a7a tany  " + requestID + "a7a " + internInspRes + "moft7a" + result);
 //            if (!(internInspRes.equals(result))) {
             //System.err.println("if(!(internInspRes.equals(result)))");
             stmt = Con.createStatement();
-            if (eyeInspRes == null) {
-                eyeInspRes = "";
-            }
+//            if (eyeInspRes == null) {
+//                eyeInspRes = "";
+//            }
             boolean eyeNotAcc = false;
             if (eyeInspRes.equals("nacc")) 
             {
