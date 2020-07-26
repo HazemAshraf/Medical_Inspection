@@ -161,13 +161,13 @@ public class oculist extends HttpServlet {
         }
     }
 
-    private static int sendPOST(String POST_URL, String POST_PARAMS, String requestID) throws IOException, SQLException, ClassNotFoundException {
+    private static int sendPOST(String POST_URL, String POST_PARAMS, String requestID,Connection Con) throws IOException, SQLException, ClassNotFoundException {
 
-        Connection Con = null;
+   //     Connection Con = null;
         Statement stmt = null;
 
-        getcon c = new getcon();
-        Con = c.myconnection();
+//        getcon c = new getcon();
+//        Con = c.myconnection();
 
         stmt = Con.createStatement();
 
@@ -248,7 +248,7 @@ public class oculist extends HttpServlet {
 
             //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
             inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
-
+//inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
             if (inputStream != null) {
                 prop.load(inputStream);
             } else {
@@ -405,7 +405,8 @@ public class oculist extends HttpServlet {
 //                if(!(eyeInspRes.equals(result))){
             stmt = Con.createStatement();
             boolean intNotAcc = false;
-     
+     if(internInspRes == null) internInspRes = "";
+     if(eyeInspRes == null) eyeInspRes = "";
             if (internInspRes.equals("nacc")) {
                 intNotAcc = true;
 
@@ -455,7 +456,7 @@ public class oculist extends HttpServlet {
                     int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                     stmt5.close();
 
-                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
+                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
                     //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                     if (res == 0) {
                         // System.out.println("0");
@@ -523,7 +524,7 @@ public class oculist extends HttpServlet {
                         int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                         stmt5.close();
 
-                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
+                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
                         //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                         if (res == 0) {
                             //   System.out.println("0");

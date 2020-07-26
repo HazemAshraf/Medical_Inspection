@@ -182,13 +182,13 @@ public class internist extends HttpServlet {
 
     }
 
-    private static int sendPOST(String POST_URL, String POST_PARAMS, String requestID) throws IOException, SQLException, ClassNotFoundException {
+    private static int sendPOST(String POST_URL, String POST_PARAMS, String requestID,Connection Con) throws IOException, SQLException, ClassNotFoundException {
 
-        Connection Con = null;
+       // Connection Con = null;
         Statement stmt = null;
 
-        getcon c = new getcon();
-        Con = c.myconnection();
+//        getcon c = new getcon();
+//        Con = c.myconnection();
 
         stmt = Con.createStatement();
 
@@ -280,7 +280,7 @@ public class internist extends HttpServlet {
 
                 //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
                    inputStream =  new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
-               // inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+              //  inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
                 if (inputStream != null) {
                     prop.load(inputStream);
                 } else {
@@ -437,16 +437,16 @@ public class internist extends HttpServlet {
          //   System.out.println(eyeInspRes);
           //  String internInspRes = getInternInspRes(Con, requestID);
 //            String InspRes = InspRes(Con, requestID);
-//            if (internInspRes == null) {
-//                internInspRes = "";
-//            }
+            if (internInspRes == null) {
+                internInspRes = "";
+            }
             //  System.out.println("a7a tany  " + requestID + "a7a " + internInspRes + "moft7a" + result);
 //            if (!(internInspRes.equals(result))) {
             //System.err.println("if(!(internInspRes.equals(result)))");
             stmt = Con.createStatement();
-//            if (eyeInspRes == null) {
-//                eyeInspRes = "";
-//            }
+            if (eyeInspRes == null) {
+                eyeInspRes = "";
+            }
             boolean eyeNotAcc = false;
             if (eyeInspRes.equals("nacc")) 
             {
@@ -498,7 +498,7 @@ public class internist extends HttpServlet {
                     int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                     stmt5.close();
 
-                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
+                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
                     //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                     if (res == 0) {
                      //   System.out.println("0");
@@ -571,7 +571,7 @@ public class internist extends HttpServlet {
                         int updated = stmt6.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                         stmt6.close();
 
-                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
+                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
                         //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                         if (res == 0) {
                       //      System.out.println("0");

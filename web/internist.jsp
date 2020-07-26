@@ -237,8 +237,8 @@
                                             
                                             Statement stmt4 = null;
 
-                                            getcon c4 = new getcon();
-                                            Con = c4.myconnection();
+                                            //getcon c4 = new getcon();
+                                           // Con = c4.myconnection();
                                             stmt4 = Con.createStatement();
                                             ResultSet rs4 = stmt4.executeQuery("select * from mi.bloodgroup");
                                             while (rs4.next()) {
@@ -371,14 +371,15 @@
                                             
                                             Statement stmt5 = null;
 
-                                            getcon c5 = new getcon();
-                                            Con = c5.myconnection();
+                                          //  getcon c5 = new getcon();
+                                          //  Con = c5.myconnection();
                                             stmt5 = Con.createStatement();
                                             ResultSet rs5 = stmt5.executeQuery("select * from mi.bloodgroup");
                                             while (rs5.next()) {
                                         %><option value="<%= rs5.getString("lookUp_ID")%>"><%= rs5.getString("description")%></option><%
                                             }
                                             stmt5.close();
+                                            Con.close();
                                         %>
 
                                     </select>

@@ -217,6 +217,7 @@
                                             while (rs.next()) {
                                         %><option value="<%= rs.getString("lookUp_ID")%>"><%= rs.getString("description")%></option><%
                                             }
+stmt.close();
                                         %>
 
                                     </select>
@@ -280,6 +281,8 @@
                                         %><option value="<%= rs2.getString("description")%>"><%= rs2.getString("description")%></option><%
                                             }
                                             stmt2.close();
+                                            Con.close();
+                                       %>
                                         %>
 
                                     </select>
