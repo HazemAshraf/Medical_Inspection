@@ -457,6 +457,8 @@ public class oculist extends HttpServlet {
                     stmt5.close();
 
                     int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
+                        stmt.close();
+                        Con.close();
                     //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                     if (res == 0) {
                         // System.out.println("0");
@@ -466,8 +468,7 @@ public class oculist extends HttpServlet {
                         out.println("alert('تم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-                        stmt.close();
-                        Con.close();
+                    
                         return;
 
                     } else if (res == 1) {
@@ -478,8 +479,7 @@ public class oculist extends HttpServlet {
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-                        stmt.close();
-                        Con.close();
+          
                         return;
                     } else {
                         out.println("otherwise error");
@@ -489,8 +489,7 @@ public class oculist extends HttpServlet {
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-                        stmt.close();
-                        Con.close();
+         
                         return;
                     }
                 }
@@ -525,6 +524,8 @@ public class oculist extends HttpServlet {
                         stmt5.close();
 
                         int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
+                          stmt.close();
+                            Con.close();
                         //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                         if (res == 0) {
                             //   System.out.println("0");
@@ -534,8 +535,7 @@ public class oculist extends HttpServlet {
                             out.println("alert('تم إرسال الكشف الي نظام التراخيص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
-                            stmt.close();
-                            Con.close();
+                          
                             return;
 
                         } else if (res == 1) {
@@ -547,8 +547,7 @@ public class oculist extends HttpServlet {
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
-                            stmt.close();
-                            Con.close();
+                       
                             return;
                         } else {
                             out.println("otherwise error");
@@ -559,8 +558,7 @@ public class oculist extends HttpServlet {
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
-                            stmt.close();
-                            Con.close();
+                          
                             return;
                         }
                     }

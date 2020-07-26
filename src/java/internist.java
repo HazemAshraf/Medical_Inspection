@@ -500,6 +500,8 @@ public class internist extends HttpServlet {
 
                     int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
                     //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
+                     stmt.close();
+                        Con.close();
                     if (res == 0) {
                      //   System.out.println("0");
                      //   System.out.println("200 OK response");
@@ -508,8 +510,7 @@ public class internist extends HttpServlet {
                         out.println("alert('تم ارسال الفحص');");
                         out.println("location='internist.jsp';");
                         out.println("</script>");
-                        stmt.close();
-                        Con.close();
+                       
 
                         return;
                     } else if (res == 1) {
@@ -521,8 +522,7 @@ public class internist extends HttpServlet {
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='internist.jsp';");
                         out.println("</script>");
-                        stmt.close();
-                        Con.close();
+                        
 
                         return;
 
@@ -536,8 +536,7 @@ public class internist extends HttpServlet {
                         out.println("location='internist.jsp';");
                         out.println("</script>");
 
-                        stmt.close();
-                        Con.close();
+                   
                         return;
                     }
                 }
@@ -572,6 +571,8 @@ public class internist extends HttpServlet {
                         stmt6.close();
 
                         int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
+                          stmt.close();
+                            Con.close();
                         //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                         if (res == 0) {
                       //      System.out.println("0");
@@ -582,8 +583,7 @@ public class internist extends HttpServlet {
                             out.println("location='internist.jsp';");
                             out.println("</script>");
 
-                            stmt.close();
-                            Con.close();
+                          
                             return;
 
                         } else if (res == 1) {
@@ -596,8 +596,6 @@ public class internist extends HttpServlet {
                             out.println("location='internist.jsp';");
                             out.println("</script>");
 
-                            stmt.close();
-                            Con.close();
                             return;
                         } else {
                             out.println("otherwise error");
@@ -609,8 +607,6 @@ public class internist extends HttpServlet {
                             out.println("location='internist.jsp';");
                             out.println("</script>");
 
-                            stmt.close();
-                            Con.close();
                             return;
                         }
                     }
