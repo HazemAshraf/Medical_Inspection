@@ -161,15 +161,13 @@ public class oculist extends HttpServlet {
         }
     }
 
-    private static int sendPOST(String POST_URL, String POST_PARAMS, String requestID,Connection Con) throws IOException, SQLException, ClassNotFoundException {
+    private static int sendPOST(String POST_URL, String POST_PARAMS, String requestID) throws IOException, SQLException, ClassNotFoundException {
 
-   //     Connection Con = null;
+        Connection Con = null;
         Statement stmt = null;
 
-//        getcon c = new getcon();
-//        Con = c.myconnection();
-
-        stmt = Con.createStatement();
+        getcon c = new getcon();
+//        
 
 //        System.out.println("JSON is " + POST_PARAMS);
 //        FileWriter file = new FileWriter("E:\\Biometrics\\log_request.txt");
@@ -209,13 +207,16 @@ public class oculist extends HttpServlet {
 //                Files.write(Paths.get("E:\\Biometrics\\log_response.txt"), txt.getBytes(), StandardOpenOption.APPEND);
                 if (response.toString().contains("200")) {
                     //write to database that this succes notified request
-
+                    Con = c.myconnection();
+                    stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_success (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
                     stmt.close();
                     Con.close();
                     return 0;
                 } else {
                     //write to database that this faild notified request
+                    Con = c.myconnection();
+                    stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_faild (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
                     stmt.close();
                     Con.close();
@@ -225,6 +226,8 @@ public class oculist extends HttpServlet {
             }
         } else {
             //write to database that this faild notified request
+            Con = c.myconnection();
+            stmt = Con.createStatement();
             int updated = stmt.executeUpdate("insert into mi.log_faild (response,requestID) values ('NO JSON COME FROM OTHER SIDE' , '" + requestID + "')");
             stmt.close();
             Con.close();
@@ -401,12 +404,15 @@ public class oculist extends HttpServlet {
             //   String eyeInspRes = getEyeInspRes(Con, requestID);
             //  String internInspRes = getInternInspRes(Con, requestID);
             //  String InspRes = InspRes(Con, requestID);
-           
 //                if(!(eyeInspRes.equals(result))){
             stmt = Con.createStatement();
             boolean intNotAcc = false;
-     if(internInspRes == null) internInspRes = "";
-     if(eyeInspRes == null) eyeInspRes = "";
+            if (internInspRes == null) {
+                internInspRes = "";
+            }
+            if (eyeInspRes == null) {
+                eyeInspRes = "";
+            }
             if (internInspRes.equals("nacc")) {
                 intNotAcc = true;
 
@@ -455,10 +461,10 @@ public class oculist extends HttpServlet {
                     stmt5 = Con.createStatement();
                     int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                     stmt5.close();
+                    stmt.close();
+                    Con.close();
+                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
 
-                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
-                        stmt.close();
-                        Con.close();
                     //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                     if (res == 0) {
                         // System.out.println("0");
@@ -468,7 +474,7 @@ public class oculist extends HttpServlet {
                         out.println("alert('تم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-                    
+
                         return;
 
                     } else if (res == 1) {
@@ -479,7 +485,7 @@ public class oculist extends HttpServlet {
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-          
+
                         return;
                     } else {
                         out.println("otherwise error");
@@ -489,7 +495,7 @@ public class oculist extends HttpServlet {
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-         
+
                         return;
                     }
                 }
@@ -522,10 +528,10 @@ public class oculist extends HttpServlet {
                         stmt5 = Con.createStatement();
                         int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                         stmt5.close();
+                        stmt.close();
+                        Con.close();
+                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
 
-                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID,Con);
-                          stmt.close();
-                            Con.close();
                         //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
                         if (res == 0) {
                             //   System.out.println("0");
@@ -535,7 +541,7 @@ public class oculist extends HttpServlet {
                             out.println("alert('تم إرسال الكشف الي نظام التراخيص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
-                          
+
                             return;
 
                         } else if (res == 1) {
@@ -547,7 +553,7 @@ public class oculist extends HttpServlet {
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
-                       
+
                             return;
                         } else {
                             out.println("otherwise error");
@@ -558,7 +564,7 @@ public class oculist extends HttpServlet {
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
-                          
+
                             return;
                         }
                     }
