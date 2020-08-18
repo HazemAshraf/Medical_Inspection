@@ -224,22 +224,26 @@ public class internist extends HttpServlet {
 //                String txt = "\n" + new Timestamp(System.currentTimeMillis()).toString() + " POST /drvintegration_test/API/MedicalCheckup/NotifyResults " + response.toString();
 ////                      
 //                Files.write(Paths.get("E:\\Biometrics\\log_response.txt"), txt.getBytes(), StandardOpenOption.APPEND);
-                if (response.toString().contains("200")) {
+                if (response.toString().contains("\"error_Message\":200")) {
                     //write to database that this succes notified request
                     Con = c.myconnection();
                     stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_success (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
+                      int updated1 = stmt.executeUpdate("update mi.clients_data set notified = 1 where requestID = '"+requestID+"'");
                     stmt.close();
                     Con.close();
                     return 0;
                 } else {
+                   int codeReturn = 1;
+                    if(response.toString().contains("\"errorCode\":-4")) codeReturn = -4;
                     //write to database that this faild notified request
                     Con = c.myconnection();
                     stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_faild (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
+                      int updated1 = stmt.executeUpdate("update mi.clients_data set notified = 0 where requestID = '"+requestID+"'");
                     stmt.close();
                     Con.close();
-                    return 1;
+                    return codeReturn;
                 }
 
             }
@@ -248,6 +252,7 @@ public class internist extends HttpServlet {
             Con = c.myconnection();
             stmt = Con.createStatement();
             int updated = stmt.executeUpdate("insert into mi.log_faild (response,requestID) values ('NO JSON COME FROM OTHER SIDE' , '" + requestID + "')");
+              int updated1 = stmt.executeUpdate("update mi.clients_data set notified = -1 where requestID = '"+requestID+"'");
             stmt.close();
             Con.close();
             return -1;
@@ -279,8 +284,8 @@ public class internist extends HttpServlet {
                 String propFileName = "config.properties";
 
                 //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-                inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
-                //  inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+              //  inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+                  inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
                 if (inputStream != null) {
                     prop.load(inputStream);
                 } else {
@@ -346,15 +351,14 @@ public class internist extends HttpServlet {
             Con = c.myconnection();
 
             stmt = Con.createStatement();
+            stmt1 = Con.createStatement();
             // System.err.println(transID);
             String sql = "";
             //  System.out.println("Composite key is = > " + theCountry + passNo);
-            sql = "select * from mi.clients_data where requestID = '" + requestID_UI + "'";
+            sql = "select requestID,MedicalCheckupID,request_date,nationality,national_id,PassportNo,eyes_inspection_result,internal_inspection_result,hasPhoto from mi.clients_data where requestID = '" + requestID_UI + "'";
 
             ResultSet rs = stmt.executeQuery(sql);
-            String nationality = "", national_id = "", passport_no = "", passport_expiryDT = "", country = "", client_nameA = "",
-                    client_nameE = "", gender = "", request_status = "", requestID = "", request_date = "", license_type = "", transaction_id = "", internal_request_date = "";
-            int request_no = -1;
+            String nationality = "", national_id = "", passport_no = "", request_date = "", country = "", requestID = "", internal_request_date = "";
 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDateTime now = LocalDateTime.now();
@@ -371,9 +375,9 @@ public class internist extends HttpServlet {
                 //request_no = rs.getInt("requestID");
                 request_date = String.valueOf(rs.getTimestamp("request_date"));
                 // transaction_id = rs.getString("transaction_id");
-                Blob b = rs.getBlob("photo");
+                int hasPhoto = rs.getInt("hasPhoto");
                 //  System.out.println("photo byte : "+b.getBytes(1, (int) b.length()).toString());
-                if (b == null) {
+                if (hasPhoto != 1) {
                     out.println("<script type='text/javascript'>");
 
                     out.println("alert('تأكد من إلتقاط الصورة');");
@@ -390,8 +394,7 @@ public class internist extends HttpServlet {
                     return;
 
                 }
-                byte[] ba = b.getBytes(1, (int) b.length());
-                photo64 = new String(ba);
+  
 
                 //get personal information
                 nationality = rs.getString("nationality");
@@ -476,6 +479,14 @@ public class internist extends HttpServlet {
             if (result.equals("nacc")) {
                 stmt.executeUpdate("update `clients_data` set `blood_group` = '" + blood_group + "' , `internal_inspection_result` = '" + result + "' , `inspection_status` = 'N' , `internal_inspection_date` = '" + internal_request_date + "' where `requestID` ='" + requestID + "'");
                 if (eyeNotAcc) {
+                     sql = "select photo from mi.clients_photos where requestID = '" + requestID_UI + "'";
+                        ResultSet rs1 = stmt1.executeQuery(sql);
+                        if (rs1.first()) {
+                            Blob b = rs1.getBlob("photo");
+                            byte[] ba = b.getBytes(1, (int) b.length());
+                            photo64 = new String(ba);
+                        }
+                        stmt1.close();
                     String json = "";
                     if (medical_conditions_str != null) {
                         // json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + internal_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"\",\"BioPath\": \"" + bioPath + "\",\"MedicalConditions\": " + medical_conditions_str + "}}";
@@ -521,7 +532,19 @@ public class internist extends HttpServlet {
 
                         return;
 
-                    } else {
+                    }
+                     else if (res == -4){
+                         out.println("there is error in inputs");
+                        //  System.out.println("1");
+                        out.println("<script type='text/javascript'>");
+
+                        out.println("alert('  برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص حيث انه تم الرد من قبل علي هذه المعاملة');");
+                        out.println("location='oculist.jsp';");
+                        out.println("</script>");
+
+                        return;
+                    }
+                     else {
                         out.println("otherwise error");
                         //   System.out.println("not 1 or 0 response error message code");
                         //   System.out.println("Error -> NOT 200 OK response");
@@ -541,6 +564,14 @@ public class internist extends HttpServlet {
                     if ((eyeInspRes.equals("acc") && result.equals("acc")) || (eyeInspRes.equals("sacc") && result.equals("acc")) || ((eyeInspRes.equals("acc") && result.equals("sacc"))) || ((eyeInspRes.equals("sacc") && result.equals("sacc")))) {
                         stmt.executeUpdate("update `clients_data` set `medical_conditions` = '" + medical_conditions_str + "' , `blood_group` = '" + blood_group + "' , `internal_inspection_result` = '" + result + "' , `inspection_status` = 'C' , `internal_inspection_date` = '" + internal_request_date + "' where `requestID` ='" + requestID + "'");
                         //
+                        sql = "select photo from mi.clients_photos where requestID = '" + requestID_UI + "'";
+                        ResultSet rs1 = stmt1.executeQuery(sql);
+                        if (rs1.first()) {
+                            Blob b = rs1.getBlob("photo");
+                            byte[] ba = b.getBytes(1, (int) b.length());
+                            photo64 = new String(ba);
+                        }
+                        stmt1.close();
                         String json = "";
                         if (medical_conditions_str != null) {
                             //json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + internal_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"\",\"BioPath\": \"" + bioPath + "\",\"MedicalConditions\": " + medical_conditions_str + "}}";
@@ -591,7 +622,19 @@ public class internist extends HttpServlet {
                             out.println("</script>");
 
                             return;
-                        } else {
+                        }
+                         else if (res == -4){
+                         out.println("there is error in inputs");
+                        //  System.out.println("1");
+                        out.println("<script type='text/javascript'>");
+
+                        out.println("alert('  برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص حيث انه تم الرد من قبل علي هذه المعاملة');");
+                        out.println("location='oculist.jsp';");
+                        out.println("</script>");
+
+                        return;
+                    }
+                         else {
                             out.println("otherwise error");
                             //      System.out.println("not 1 or 0 response error message code");
                             //     System.out.println("Error -> NOT 200 OK response");

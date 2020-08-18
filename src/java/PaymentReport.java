@@ -165,7 +165,8 @@ public class PaymentReport extends HttpServlet {
             dateCell.setCellStyle(dateCellStyle);
             row.createCell(19).setCellValue(payment.getQueueNumberUsed());
 
-            row.createCell(20).setCellValue(payment.getMedicalTotalAmount());
+        //    row.createCell(20).setCellValue(payment.getMedicalTotalAmount());
+         row.createCell(20).setCellValue("");
             row.createCell(21).setCellValue(payment.getType());
 
             row.createCell(22).setCellValue(payment.getStatusCode());
