@@ -6,7 +6,10 @@
 
 //import com.google.common.base.Strings;
 import com.aman.medical.db.getcon;
+import com.google.gson.JsonObject;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
 import java.io.IOException;
@@ -27,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -142,6 +146,41 @@ public class faild extends HttpServlet {
         try {
             response.setContentType("text/html;charset=UTF-8");
 
+            JsonObject obj = new JsonObject();
+            String applicationType = "";
+                    InputStream inputStream = null;
+        try {
+            Properties prop = new Properties();
+            String propFileName = "config.properties";
+
+            //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+           //  inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+            inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+            if (inputStream != null) {
+                prop.load(inputStream);
+            } else {
+                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+            }
+
+            // get the property value and print it out
+            applicationType = prop.getProperty("applicationType");
+
+//            System.out.println("ip running : " + IP + " and the api context : " + API_CTX);
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+//            inputStream.close();
+        }
+            
+
+            if (applicationType.equals("MEDICALPAYMENT") || applicationType.equals("INSPECTIONPAYMENT")){
+		PrintWriter out = response.getWriter();
+		obj.addProperty("ERROR", "you are trying to retry sending medical to 3S on payment applciation");
+		out.write(obj.toString());
+                return;
+	}
+            
+            
             getcon c = new getcon();
 
             Con = c.myconnection();
@@ -175,8 +214,12 @@ public class faild extends HttpServlet {
             }
 
             PrintWriter out = response.getWriter();
-            out.println("requestIDs has notified are -> " + rIDs.toString());
-            out.println("requestIDs has faild notified are -> " + FaildrIDs.toString());
+            JsonObject obj1 = new JsonObject();
+            obj1.addProperty("Notified_Request_IDs", rIDs.toString());
+            obj1.addProperty("faild Notified_Request_IDs", FaildrIDs.toString());
+            out.println(obj1.toString());
+//            out.println("requestIDs has notified are -> " + );
+//            out.println("requestIDs has faild notified are -> " + FaildrIDs.toString());
 
         } catch (SQLException ex) {
             Logger.getLogger(ConfirmData.class.getName()).log(Level.SEVERE, null, ex);

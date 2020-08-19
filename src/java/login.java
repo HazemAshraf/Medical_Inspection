@@ -6,12 +6,16 @@
 
 //import com.google.common.base.Strings;
 import com.aman.medical.db.getcon;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -54,7 +58,43 @@ public class login extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            String applicationType = "";
+                    InputStream inputStream = null;
+        try {
+            Properties prop = new Properties();
+            String propFileName = "config.properties";
 
+            //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+           //  inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+            inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+            if (inputStream != null) {
+                prop.load(inputStream);
+            } else {
+                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+            }
+
+            // get the property value and print it out
+            applicationType = prop.getProperty("applicationType");
+
+//            System.out.println("ip running : " + IP + " and the api context : " + API_CTX);
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+//            inputStream.close();
+        }
+            
+            
+            	if (applicationType.equals("MEDICALPAYMENT") || applicationType.equals("INSPECTIONPAYMENT")){
+		out.println("<script type='text/javascript'>");
+		out.println("alert(' You are trying to login to payment application !');");
+		out.println("location='index.jsp';");
+		out.println("</script>");
+                return;
+	}
+            
+            
+            
+            
             try {
                 /* TODO output your page here. You may use following sample code. */
                 Class.forName("com.mysql.jdbc.Driver");
@@ -72,9 +112,9 @@ public class login extends HttpServlet {
                 String password = request.getParameter("pass");
                 String theUnit = request.getParameter("theUnit");
 
-                if ("وحدة مرور مدينة نصر".equals(theUnit)) {
-                    System.out.println("walaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-                }
+//                if ("وحدة مرور مدينة نصر".equals(theUnit)) {
+//                    System.out.println("walaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//                }
                 String type = "";
                 System.out.println("user name : " + email);
                 System.out.println("type : " + type);
@@ -228,7 +268,7 @@ public class login extends HttpServlet {
 
                             out.println("alert(' Wrong Email or Password !');");
 
-                            out.println("location='index.html';");
+                            out.println("location='index.jsp';");
 
                             out.println("</script>");
 
