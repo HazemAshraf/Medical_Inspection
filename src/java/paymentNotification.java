@@ -63,7 +63,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
  *
  * @author User
  */
-@WebServlet(name = "paymentNotification", urlPatterns = {"/paymentNotificationnnnnnnn"})
+@WebServlet(name = "paymentNotification", urlPatterns = {"/paymentNotification"})
 public class paymentNotification extends HttpServlet {
 
     /**
@@ -100,8 +100,8 @@ public class paymentNotification extends HttpServlet {
             String propFileName = "config.properties";
 
             //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-            //  inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
-            inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+            inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+            // inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
 
             if (inputStream != null) {
                 prop.load(inputStream);
@@ -159,174 +159,185 @@ public class paymentNotification extends HttpServlet {
         Connection Con = null, Con1 = null;
         Statement stmt, stmt1 = null, stmt2 = null;
         getcon myCon = new getcon();
-         Paymentnotify obj = mapper.readValue(rcvd.toString(), Paymentnotify.class);
-  try {
-        if (a.equals("TIT_Medical_payment")) {
-            String jasperName = "";
-            System.out.println("aaaaaaaaaaaaa");
-           
-            if (!PassportIssueCountryCode.equals("")) {
-                List<PassportIssueCountry> passportIssue = entityManager.createNamedQuery("PassportIssueCountry.findByDescription", PassportIssueCountry.class).setParameter("description", PassportIssueCountryCode).getResultList();
-                if (passportIssue.size() > 0) {
-                    obj.setPassportIssueCountry(passportIssue.get(0).getLookUpID());
+        Paymentnotify obj = mapper.readValue(rcvd.toString(), Paymentnotify.class);
+        try {
+            if (a.equals("TIT_Medical_payment")) {
+                String jasperName = "";
+                System.out.println("aaaaaaaaaaaaa");
+
+                if (!PassportIssueCountryCode.equals("")) {
+                    List<PassportIssueCountry> passportIssue = entityManager.createNamedQuery("PassportIssueCountry.findByDescription", PassportIssueCountry.class).setParameter("description", PassportIssueCountryCode).getResultList();
+                    if (passportIssue.size() > 0) {
+                        obj.setPassportIssueCountry(passportIssue.get(0).getLookUpID());
+                    }
                 }
-            }
 
-            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " + obj + "                " + obj.getTotalAmount());
-            Random random = new Random();
-            obj.setPaymentNumber(Integer.toString(random.nextInt()));
-            Date date = Calendar.getInstance().getTime();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            System.out.println("aaaaaaaaaaaaa " + obj);
+                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " + obj + "                " + obj.getTotalAmount());
+                Random random = new Random();
+                obj.setPaymentNumber(Integer.toString(random.nextInt()));
+                Date date = Calendar.getInstance().getTime();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                System.out.println("aaaaaaaaaaaaa " + obj);
 
-            System.out.println("bbbbbbbbb " + obj.getTimeStamp());
+                System.out.println("bbbbbbbbb " + obj.getTimeStamp());
 
-            String output = obj.getTimeStamp().substring(0, 10);
+                String output = obj.getTimeStamp().substring(0, 10);
 
-            obj.setDate(output);
-            List<Paymentnotify> payNotifyByDate = entityManager.createNamedQuery("Paymentnotify.findByDateAndTraffiUnit", Paymentnotify.class).setParameter("date", obj.getDate()).
-                    setParameter("trafficUnit", obj.getTrafficUnit()).getResultList();
-            if (payNotifyByDate.size() < 1) {
-                obj.setQueueNumber("1");
-            } else {
-                List<Integer> l = new ArrayList<>();
-                payNotifyByDate.stream().forEach(i -> {
-                    l.add(Integer.parseInt(i.getQueueNumber()));
-                });
-                Collections.sort(l, Collections.reverseOrder());
-                System.out.println("aaaaaaaaaaaaaaaaaaaa list  " + l);
-                System.out.println("sadfasfafs " + l.get(0));
-                int value = l.get(0) + 1;
-                System.out.println("queeeeeeeee " + value);
-                obj.setQueueNumber(Integer.toString(value));
-            }
+                obj.setDate(output);
+                List<Paymentnotify> payNotifyByDate = entityManager.createNamedQuery("Paymentnotify.findByDateAndTraffiUnit", Paymentnotify.class).setParameter("date", obj.getDate()).
+                        setParameter("trafficUnit", obj.getTrafficUnit()).getResultList();
+                if (payNotifyByDate.size() < 1) {
+                    obj.setQueueNumber("1");
+                } else {
+                    List<Integer> l = new ArrayList<>();
+                    payNotifyByDate.stream().forEach(i -> {
+                        l.add(Integer.parseInt(i.getQueueNumber()));
+                    });
+                    Collections.sort(l, Collections.reverseOrder());
+                    System.out.println("aaaaaaaaaaaaaaaaaaaa list  " + l);
+                    System.out.println("sadfasfafs " + l.get(0));
+                    int value = l.get(0) + 1;
+                    System.out.println("queeeeeeeee " + value);
+                    obj.setQueueNumber(Integer.toString(value));
+                }
 
-            Date d = dateFormat.parse(obj.getTimeStamp());
-            System.out.println("dddddddddddddddddddddd " + d);
-            //Paymentnotify p = new Paymentnotify();
-            List<Paymentnotify> listp = entityManager.createNamedQuery("Paymentnotify.findByRequestID", Paymentnotify.class).setParameter("requestID", obj.getRequestID()).getResultList();
-            // System.out.println("aaaaaaaaaaaaaaaaaaaaa "+p);
-
-          
+                Date d = dateFormat.parse(obj.getTimeStamp());
+                System.out.println("dddddddddddddddddddddd " + d);
+                //Paymentnotify p = new Paymentnotify();
+                List<Paymentnotify> listp = entityManager.createNamedQuery("Paymentnotify.findByRequestID", Paymentnotify.class).setParameter("requestID", obj.getRequestID()).getResultList();
+                // System.out.println("aaaaaaaaaaaaaaaaaaaaa "+p);
+                String finalMedicalFees = "0";
+                String finalBloodFees = "0";
                 if (listp.size() > 0) {
-                    
-                                        params.put("totalAmount", totalAmountNormal); // 0
-                    params.put("medicalFees", medicalFees); // 200
-                    params.put("bloodFees", bloodFees); // 85
+
+                    params.put("totalAmount", totalAmountNormal); // 650
+                    params.put("medicalFees", finalMedicalFees); // 200
+                    params.put("bloodFees", finalBloodFees); // 85
+                    if (obj.getPayedElements().contains("Medical")) {
+                        finalMedicalFees = medicalFees;
+                        finalBloodFees = bloodFees;
+                        params.put("medicalFees", finalMedicalFees); // 200
+                        params.put("bloodFees", finalBloodFees); // 85
+                    }
+
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
                     obj.setTotalAmount(String.valueOf(Integer.parseInt(medicalFees) + Integer.parseInt(bloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
 
                     //check school rules....
                     stmt = null;
-                
-                        Con = myCon.myconnection();
-                        if(Con != null) System.out.println("Database Connection to the localhost done successfully");
-                        stmt = Con.createStatement();
-                        ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
-                        while (rs.next()) {
-                            if (obj.getTrafficUnit().contains(rs.getString("name"))) {
-                                if (obj.getPayedElements().contains("Medical")) { // Renew (old)
-                                    jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
-                                    params.put("totalAmount", totalAmountSchoolOld); // 1685
-                                    params.put("medicalFees", medicalFees); // 200
-                                    params.put("bloodFees", bloodFees); // 85
-                                    params.put("schoolFees", schoolFeesOld); // 1400
-                                    obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
-                                }
-                                if (obj.getPayedElements().contains("Medical") && obj.getPayedElements().contains("E-Exam")) {
-                                    jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
-                                    params.put("totalAmount", totalAmountSchoolNew); // 2085
-                                    params.put("medicalFees", medicalFees); // 200
-                                    params.put("bloodFees", bloodFees); // 85
-                                    params.put("schoolFees", schoolFeesNew); // 1800
-                                    obj.setTotalAmount(totalAmountSchoolNew); // 1800+200+85
-                                }
 
-                                break;
+                    Con = myCon.myconnection();
+                    if (Con != null) {
+                        System.out.println("Database Connection to the localhost done successfully");
+                    }
+                    stmt = Con.createStatement();
+                    ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
+                    while (rs.next()) {
+                        if (obj.getTrafficUnit().contains(rs.getString("name"))) {
+                            // Renew (old)
+                            jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                            params.put("totalAmount", totalAmountSchoolOld); // 1685
+                            params.put("medicalFees", finalMedicalFees); // 200
+                            params.put("bloodFees", finalBloodFees); // 85
+                            params.put("schoolFees", schoolFeesOld); // 1400
+                            obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
+
+                            if (obj.getPayedElements().contains("E-Exam")) { // new
+                                jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
+                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                                params.put("totalAmount", totalAmountSchoolNew); // 2085
+                                params.put("medicalFees", finalMedicalFees); // 200
+                                params.put("bloodFees", finalBloodFees); // 85
+                                params.put("schoolFees", schoolFeesNew); // 1800
+                                obj.setTotalAmount(totalAmountSchoolNew); // 1800+200+85
                             }
-                        }
-                
-                        stmt.close();
-                    
-                  
 
-             
+                            break;
+                        }
+                    }
+
+                    stmt.close();
+
                     obj.setStatusCode("200 OK");
                     obj.setQueueNumber(listp.get(0).getQueueNumber());
-                    
-                    
-                                //insert new record with requestID at clients data on 192.168.235.76
-                                //check if exist first
-                                
-                    getconMedicalServer getcon = new getconMedicalServer();
-                 
+
+                    //insert new record with requestID at clients data on 192.168.235.76
+                    //check if exist first
+                     getconMedicalServer getcon = new getconMedicalServer();
+                    // getcon getcon = new getcon();
                     Con1 = getcon.myconnection();
-                    if(Con1 != null) System.out.println("Database connection to server 76 done successfully");
-                    
-                    stmt2 = Con1.createStatement();
-                    ResultSet rs1 = stmt2.executeQuery("select Name from `mi`.`clients_data` where requestID = '"+obj.getRequestID()+"'");
-                    if(!rs1.first()){
-                        stmt1 = Con1.createStatement();
-                    String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
-                    stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
-                    stmt1.close();
+                    if (Con1 != null) {
+                        System.out.println("Database connection to server 76 done successfully");
                     }
-                stmt2.close();
+
+                    stmt2 = Con1.createStatement();
+                    ResultSet rs1 = stmt2.executeQuery("select Name from `mi`.`clients_data` where requestID = '" + obj.getRequestID() + "'");
+                    if (!rs1.first()) {
+                        stmt1 = Con1.createStatement();
+                        String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
+                        stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
+                        stmt1.close();
+                    }
+                    stmt2.close();
                     //////////
-                    
-                    
+
                     obj1.addProperty("RequestID", listp.get(0).getRequestID());
                     obj1.addProperty("Confirmed", "true");
-                    obj1.addProperty("TimeStamp",listp.get(0).getTimeStamp());
-                    
+                    obj1.addProperty("TimeStamp", listp.get(0).getTimeStamp());
+
                     obj1.addProperty("PaymentNumber", listp.get(0).getPaymentNumber());
                     obj1.addProperty("queueNumber", listp.get(0).getQueueNumber());
 
-           
-                  //  obj1.addProperty("Error Message", "This request ID was used before");
+                    //  obj1.addProperty("Error Message", "This request ID was used before");
+                } else {
 
-                  
-                } 
-                else
-                {
-
-                    params.put("totalAmount", totalAmountNormal); // 0
-                    params.put("medicalFees", medicalFees); // 200
-                    params.put("bloodFees", bloodFees); // 85
+                    params.put("totalAmount", totalAmountNormal); // 650
+                    params.put("medicalFees", finalMedicalFees); // 200
+                    params.put("bloodFees", finalBloodFees); // 85
+                    if (obj.getPayedElements().contains("Medical")) {
+                        finalMedicalFees = medicalFees;
+                        finalBloodFees = bloodFees;
+                        params.put("medicalFees", finalMedicalFees); // 200
+                        params.put("bloodFees", finalBloodFees); // 85
+                    }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
                     obj.setTotalAmount(String.valueOf(Integer.parseInt(medicalFees) + Integer.parseInt(bloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
 
                     //check school rules....
                     stmt = null;
-                        Con = myCon.myconnection();
-                        if(Con != null) System.out.println("Database Connection to the localhost server done successfully");
-                        stmt = Con.createStatement();
-                        ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
-                        while (rs.next()) {
-                            if (obj.getTrafficUnit().contains(rs.getString("name"))) {
-                                if (obj.getPayedElements().contains("Medical")) { // Renew (old)
-                                    jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
-                                    params.put("totalAmount", totalAmountSchoolOld); // 1685
-                                    params.put("medicalFees", medicalFees); // 200
-                                    params.put("bloodFees", bloodFees); // 85
-                                    params.put("schoolFees", schoolFeesOld); // 1400
-                                    obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
-                                }
-                                if (obj.getPayedElements().contains("Medical") && obj.getPayedElements().contains("E-Exam")) {
-                                    jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
-                                    params.put("totalAmount", totalAmountSchoolNew); // 2085
-                                    params.put("medicalFees", medicalFees); // 200
-                                    params.put("bloodFees", bloodFees); // 85
-                                    params.put("schoolFees", schoolFeesNew); // 1800
-                                    obj.setTotalAmount(totalAmountSchoolNew); // 1800+200+85
-                                }
+                    Con = myCon.myconnection();
+                    if (Con != null) {
+                        System.out.println("Database Connection to the localhost server done successfully");
+                    }
+                    stmt = Con.createStatement();
+                    ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
+                    while (rs.next()) {
+                        if (obj.getTrafficUnit().contains(rs.getString("name"))) {
+                            // Renew (old)
+                            jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                            params.put("totalAmount", totalAmountSchoolOld); // 1685
+                            params.put("medicalFees", finalMedicalFees); // 200
+                            params.put("bloodFees", finalBloodFees); // 85
+                            params.put("schoolFees", schoolFeesOld); // 1400
+                            obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
 
-                                break;
+                            if (obj.getPayedElements().contains("E-Exam")) { // new
+                                jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
+                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                                params.put("totalAmount", totalAmountSchoolNew); // 2085
+                                params.put("medicalFees", finalMedicalFees); // 200
+                                params.put("bloodFees", finalBloodFees); // 85
+                                params.put("schoolFees", schoolFeesNew); // 1800
+                                obj.setTotalAmount(totalAmountSchoolNew); // 1800+200+85
                             }
+
+                            break;
                         }
+                    }
 
-                        stmt.close();
-
+                    stmt.close();
 
                     obj.setStatusCode("200 OK");
                     entityManager.getTransaction().begin();
@@ -335,12 +346,15 @@ public class paymentNotification extends HttpServlet {
 
                     //insert new record with requestID at clients data on 192.168.235.76
                     getconMedicalServer getcon = new getconMedicalServer();
+                  // getcon getcon = new getcon();
                     Con1 = getcon.myconnection();
-                    if(Con1 != null) System.out.println("Database Connection to server 76 done successfully");
+                    if (Con1 != null) {
+                        System.out.println("Database Connection to server 76 done successfully");
+                    }
                     stmt1 = Con1.createStatement();
                     String foreignComposite = obj.getPassportIssueCountry() + obj.getPassportNo();
                     stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
-                   
+
                     stmt1.close();
                     //////////
 
@@ -376,15 +390,15 @@ public class paymentNotification extends HttpServlet {
 ////                JasperExportManager.exportReportToPdfFile(print,"C:/User/user/Desktop/Test.pdf");
 ////                    System.out.println("ddddddddddddddddddd");
                 JasperPrint print = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-                String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
-               // String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                // String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
                 JasperExportManager.exportReportToPdfFile(print, receiptPath);
 
                 String IP = "";
 //                // System.out.println("IP of client is : "+request.getRemoteAddr() + " " +request.getRemoteHost());
                 String TU = obj.getTrafficUnit();
                 IP = loadedIp;
-
+//
                 stmt = null;
 
                     stmt = Con.createStatement();
@@ -397,7 +411,6 @@ public class paymentNotification extends HttpServlet {
                     }
            
                     stmt.close();
-             
 
 ////                if (request.getRemoteAddr().toString().contains("192.168.235.55") || request.getRemoteAddr().toString().contains("192.168.235.51")) {
 ////                    IP = "192.168.235.76";
@@ -417,22 +430,19 @@ public class paymentNotification extends HttpServlet {
                 PrintWriter out = response.getWriter();
                 obj1.addProperty("receiptURL", receiptPathResp);
                 out.write(obj1.toString());
-            } 
+            } else {
+                PrintWriter out = response.getWriter();
+                obj1.addProperty("Error Message", "Invalid serviceID");
+                out.write(obj1.toString());
+            }
+        } catch (Exception e) {
+            System.out.println("catch Exception block -> " + e.toString());
+            obj.setStatusCode(e.toString());
+            entityManager.getTransaction().begin();
+            entityManager.persist(obj);
+            entityManager.getTransaction().commit();
 
-         else {
-            PrintWriter out = response.getWriter();
-            obj1.addProperty("Error Message", "Invalid serviceID");
-            out.write(obj1.toString());
-        }
-    }
-        catch (Exception e) {
-                System.out.println("catch Exception block -> " + e.toString());
-                obj.setStatusCode(e.toString());
-                entityManager.getTransaction().begin();
-                entityManager.persist(obj);
-                entityManager.getTransaction().commit();
-                
-                                    //insert new record with requestID at clients data on 192.168.235.76
+            //insert new record with requestID at clients data on 192.168.235.76
 //                    getconMedicalServer getcon = new getconMedicalServer();
 //                    Con1 = getcon.myconnection();
 //                    stmt1 = Con1.createStatement();
@@ -440,14 +450,12 @@ public class paymentNotification extends HttpServlet {
 //                    stmt1.executeUpdate("INSERT INTO `mi`.`clients_data` (`requestID`,`Name`,`LicenseType`,`TrafficUnit`,`PassportNo`,`PassportIssueCountry`,`national_id`,`nationality`,`queue`,`TotalAmount`) VALUES ('" + obj.getRequestID() + "' , '" + obj.getApplicantName() + "' , '" + obj.getLicenseType() + "' , '" + obj.getTrafficUnit() + "' , '" + obj.getPassportNo() + "' , '" + obj.getPassportIssueCountry() + "' , '" + obj.getNationalID() + "' , '" + foreignComposite + "' , '" + obj.getQueueNumber() + "' , '" + obj.getTotalAmount() + "');");
 //                   stmt1.close();
 //                    Con1.close();
-                    
-                    ////////// 
-                response.setStatus(500);
-            }
-  finally {
-  Con.close();
-  Con1.close();
-  }
+            ////////// 
+            response.setStatus(500);
+        } finally {
+            Con.close();
+            Con1.close();
+        }
 
 //            if (a.equals("TIT_Vehicle_Inspection_payment")) {
 //            Vehicleinspection obj = mapper.readValue(rcvd.toString(), Vehicleinspection.class);
