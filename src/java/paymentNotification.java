@@ -259,7 +259,7 @@ public class paymentNotification extends HttpServlet {
                         if (obj.getTrafficUnit().contains(rs.getString("name"))) {
                             // Renew (old)
                             jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
-                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesOld));
                             params.put("totalAmount", totalAmountSchoolOld); // 1685
                             params.put("medicalFees", finalMedicalFees); // 200
                             params.put("bloodFees", finalBloodFees); // 85
@@ -268,7 +268,7 @@ public class paymentNotification extends HttpServlet {
 
                             if (obj.getPayedElements().contains("E-Exam")) { // new
                                 jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
-                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesNew));
                                 params.put("totalAmount", totalAmountSchoolNew); // 2085
                                 params.put("medicalFees", finalMedicalFees); // 200
                                 params.put("bloodFees", finalBloodFees); // 85
@@ -350,7 +350,7 @@ public class paymentNotification extends HttpServlet {
                          if (obj.getTrafficUnit().contains(rs.getString("name"))) {
                             // Renew (old)
                             jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
-                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesOld));
                             params.put("totalAmount", totalAmountSchoolOld); // 1685
                             params.put("medicalFees", finalMedicalFees); // 200
                             params.put("bloodFees", finalBloodFees); // 85
@@ -359,7 +359,7 @@ public class paymentNotification extends HttpServlet {
 
                             if (obj.getPayedElements().contains("E-Exam")) { // new
                                 jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
-                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesNew));
                                 params.put("totalAmount", totalAmountSchoolNew); // 2085
                                 params.put("medicalFees", finalMedicalFees); // 200
                                 params.put("bloodFees", finalBloodFees); // 85
