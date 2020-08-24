@@ -227,15 +227,22 @@ public class paymentNotification extends HttpServlet {
                 //Paymentnotify p = new Paymentnotify();
                 List<Paymentnotify> listp = entityManager.createNamedQuery("Paymentnotify.findByRequestID", Paymentnotify.class).setParameter("requestID", obj.getRequestID()).getResultList();
                 // System.out.println("aaaaaaaaaaaaaaaaaaaaa "+p);
-
+                 String finalMedicalFees = "0";
+                String finalBloodFees = "0";
                 String username = "";
                 String password = "";
                 if (listp.size() > 0) {
                     username = obj.getEusername();
                     password = obj.getEpassword();
-                    params.put("totalAmount", totalAmountNormal); // 0
-                    params.put("medicalFees", medicalFees); // 200
-                    params.put("bloodFees", bloodFees); // 85
+                     params.put("totalAmount", totalAmountNormal); // 650
+                    params.put("medicalFees", finalMedicalFees); // 200
+                    params.put("bloodFees", finalBloodFees); // 85
+                    if (obj.getPayedElements().contains("Medical")) {
+                        finalMedicalFees = medicalFees;
+                        finalBloodFees = bloodFees;
+                        params.put("medicalFees", finalMedicalFees); // 200
+                        params.put("bloodFees", finalBloodFees); // 85
+                    }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
                     obj.setTotalAmount(String.valueOf(Integer.parseInt(medicalFees) + Integer.parseInt(bloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
 
@@ -250,19 +257,21 @@ public class paymentNotification extends HttpServlet {
                     ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
                     while (rs.next()) {
                         if (obj.getTrafficUnit().contains(rs.getString("name"))) {
-                            if (obj.getPayedElements().contains("Medical")) { // Renew (old)
-                                jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
-                                params.put("totalAmount", totalAmountSchoolOld); // 1685
-                                params.put("medicalFees", medicalFees); // 200
-                                params.put("bloodFees", bloodFees); // 85
-                                params.put("schoolFees", schoolFeesOld); // 1400
-                                obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
-                            }
-                            if (obj.getPayedElements().contains("Medical") && obj.getPayedElements().contains("E-Exam")) {
+                            // Renew (old)
+                            jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                            params.put("totalAmount", totalAmountSchoolOld); // 1685
+                            params.put("medicalFees", finalMedicalFees); // 200
+                            params.put("bloodFees", finalBloodFees); // 85
+                            params.put("schoolFees", schoolFeesOld); // 1400
+                            obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
+
+                            if (obj.getPayedElements().contains("E-Exam")) { // new
                                 jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
+                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
                                 params.put("totalAmount", totalAmountSchoolNew); // 2085
-                                params.put("medicalFees", medicalFees); // 200
-                                params.put("bloodFees", bloodFees); // 85
+                                params.put("medicalFees", finalMedicalFees); // 200
+                                params.put("bloodFees", finalBloodFees); // 85
                                 params.put("schoolFees", schoolFeesNew); // 1800
                                 obj.setTotalAmount(totalAmountSchoolNew); // 1800+200+85
                             }
@@ -317,9 +326,15 @@ public class paymentNotification extends HttpServlet {
                     //  obj1.addProperty("Error Message", "This request ID was used before");
                 } else {
 
-                    params.put("totalAmount", totalAmountNormal); // 0
-                    params.put("medicalFees", medicalFees); // 200
-                    params.put("bloodFees", bloodFees); // 85
+                   params.put("totalAmount", totalAmountNormal); // 650
+                    params.put("medicalFees", finalMedicalFees); // 200
+                    params.put("bloodFees", finalBloodFees); // 85
+                    if (obj.getPayedElements().contains("Medical")) {
+                        finalMedicalFees = medicalFees;
+                        finalBloodFees = bloodFees;
+                        params.put("medicalFees", finalMedicalFees); // 200
+                        params.put("bloodFees", finalBloodFees); // 85
+                    }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
                     obj.setTotalAmount(String.valueOf(Integer.parseInt(medicalFees) + Integer.parseInt(bloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
 
@@ -332,20 +347,22 @@ public class paymentNotification extends HttpServlet {
                     stmt = Con.createStatement();
                     ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
                     while (rs.next()) {
-                        if (obj.getTrafficUnit().contains(rs.getString("name"))) {
-                            if (obj.getPayedElements().contains("Medical")) { // Renew (old)
-                                jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
-                                params.put("totalAmount", totalAmountSchoolOld); // 1685
-                                params.put("medicalFees", medicalFees); // 200
-                                params.put("bloodFees", bloodFees); // 85
-                                params.put("schoolFees", schoolFeesOld); // 1400
-                                obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
-                            }
-                            if (obj.getPayedElements().contains("Medical") && obj.getPayedElements().contains("E-Exam")) {
+                         if (obj.getTrafficUnit().contains(rs.getString("name"))) {
+                            // Renew (old)
+                            jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
+                            params.put("totalAmount", totalAmountSchoolOld); // 1685
+                            params.put("medicalFees", finalMedicalFees); // 200
+                            params.put("bloodFees", finalBloodFees); // 85
+                            params.put("schoolFees", schoolFeesOld); // 1400
+                            obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
+
+                            if (obj.getPayedElements().contains("E-Exam")) { // new
                                 jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
+                                totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees));
                                 params.put("totalAmount", totalAmountSchoolNew); // 2085
-                                params.put("medicalFees", medicalFees); // 200
-                                params.put("bloodFees", bloodFees); // 85
+                                params.put("medicalFees", finalMedicalFees); // 200
+                                params.put("bloodFees", finalBloodFees); // 85
                                 params.put("schoolFees", schoolFeesNew); // 1800
                                 obj.setTotalAmount(totalAmountSchoolNew); // 1800+200+85
                             }
