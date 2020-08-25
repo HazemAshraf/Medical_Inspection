@@ -101,8 +101,8 @@ public class paymentNotification extends HttpServlet {
             String propFileName = "config.properties";
 
             //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-              inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
-            //inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+            //  inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+            inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
 
             if (inputStream != null) {
                 prop.load(inputStream);
@@ -457,8 +457,8 @@ public class paymentNotification extends HttpServlet {
 ////                JasperExportManager.exportReportToPdfFile(print,"C:/User/user/Desktop/Test.pdf");
 ////                    System.out.println("ddddddddddddddddddd");
                 JasperPrint print = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-               // String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
-                 String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+               //  String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
                 JasperExportManager.exportReportToPdfFile(print, receiptPath);
 
                 String IP = "";
@@ -593,8 +593,8 @@ public class paymentNotification extends HttpServlet {
                 JasperReport jasperReport = (JasperReport) JRLoader.loadObject(is);
 
                 JasperPrint print = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-               // String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
-                 String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                // String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
                 JasperExportManager.exportReportToPdfFile(print, receiptPath);
                 String IP = "";
 

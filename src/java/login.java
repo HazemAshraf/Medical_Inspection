@@ -65,8 +65,8 @@ public class login extends HttpServlet {
             String propFileName = "config.properties";
 
             //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-           //  inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
-            inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+             inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+         //   inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
             if (inputStream != null) {
                 prop.load(inputStream);
             } else {
