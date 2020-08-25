@@ -185,19 +185,27 @@ public class faild extends HttpServlet {
 
             Con = c.myconnection();
 
-            String sql = "select * from mi.clients_data , mi.clients_photos where mi.clients_data.requestID = mi.clients_photos.requestID and (notified = 0 or notified = -1)";
+            String sql = "select mi.clients_photos.photo , mi.clients_data.requestID , mi.clients_data.inspection_status , mi.clients_data.MedicalCheckupID , mi.clients_data.request_date , mi.clients_data.blood_group from mi.clients_data , mi.clients_photos where mi.clients_data.requestID = mi.clients_photos.requestID and (notified = 0 or notified = -1) and inspection_status != 'W' or inspection_status is not null";
             stmt = Con.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             String photo64 = "";
             List<String> rIDs = new ArrayList<String>();
              List<String> FaildrIDs = new ArrayList<String>();
+             int medicalRes = 1;
             while (rs.next()) {
                 //fetch this request ID 
                 Blob b = rs.getBlob("photo");
                 byte[] ba = b.getBytes(1, (int) b.length());
                 photo64 = new String(ba);
 
-                String json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getTimestamp("request_date").toString() + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
+                if(rs.getString("inspection_status").equals("NC")){
+                medicalRes = 2;
+                }
+                else if(rs.getString("inspection_status").equals("C")){
+                medicalRes = 1;
+                }
+                
+                String json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getTimestamp("request_date").toString() + "\",\"MedicalCheckupResults\": "+medicalRes+",\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
 
                 Thread.sleep(3000);
 
