@@ -198,7 +198,7 @@ public class faild extends HttpServlet {
                 byte[] ba = b.getBytes(1, (int) b.length());
                 photo64 = new String(ba);
 
-                if(rs.getString("inspection_status").equals("NC")){
+                if(rs.getString("inspection_status").equals("N")){
                 medicalRes = 2;
                 }
                 else if(rs.getString("inspection_status").equals("C")){
