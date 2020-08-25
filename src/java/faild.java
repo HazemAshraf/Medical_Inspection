@@ -111,8 +111,8 @@ public class faild extends HttpServlet {
                     Con = c.myconnection();
                     stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_success_retry (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
-                    int updated1 = stmt.executeUpdate("update clients_data set notified = 1 where requestID = '"+requestID+"'");
-                    
+                    int updated1 = stmt.executeUpdate("update clients_data set notified = 1 where requestID = '" + requestID + "'");
+
                     stmt.close();
                     Con.close();
                     return 0;
@@ -148,39 +148,41 @@ public class faild extends HttpServlet {
 
             JsonObject obj = new JsonObject();
             String applicationType = "";
-                    InputStream inputStream = null;
-        try {
-            Properties prop = new Properties();
-            String propFileName = "config.properties";
+            String IP = "";
+            String API_CTX = "";
+            InputStream inputStream = null;
+            try {
+                Properties prop = new Properties();
+                String propFileName = "config.properties";
 
-            //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-             inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
-           // inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
-            if (inputStream != null) {
-                prop.load(inputStream);
-            } else {
-                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-            }
+                //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+                inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+                // inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+                if (inputStream != null) {
+                    prop.load(inputStream);
+                } else {
+                    throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+                }
 
-            // get the property value and print it out
-            applicationType = prop.getProperty("applicationType");
+                // get the property value and print it out
+                applicationType = prop.getProperty("applicationType");
+                IP = prop.getProperty("called_ip");
+                API_CTX = prop.getProperty("api_ctx");
 
 //            System.out.println("ip running : " + IP + " and the api context : " + API_CTX);
-        } catch (Exception e) {
-            System.out.println("Exception: " + e);
-        } finally {
+            } catch (Exception e) {
+                System.out.println("Exception: " + e);
+            } finally {
 //            inputStream.close();
-        }
-            
+            }
 
-            if (applicationType.equals("MEDICALPAYMENT") || applicationType.equals("INSPECTIONPAYMENT")){
-		PrintWriter out = response.getWriter();
-		obj.addProperty("ERROR", "you are trying to retry sending medical to 3S on payment applciation");
-		out.write(obj.toString());
+            if (applicationType.equals("MEDICALPAYMENT") || applicationType.equals("INSPECTIONPAYMENT")) {
+                PrintWriter out = response.getWriter();
+                obj.addProperty("ERROR", "you are trying to retry sending medical to 3S on payment applciation");
+                out.write(obj.toString());
                 return;
-	}
-            
-            
+            }
+
             getcon c = new getcon();
 
             Con = c.myconnection();
@@ -190,29 +192,32 @@ public class faild extends HttpServlet {
             ResultSet rs = stmt.executeQuery(sql);
             String photo64 = "";
             List<String> rIDs = new ArrayList<String>();
-             List<String> FaildrIDs = new ArrayList<String>();
-             int medicalRes = 1;
+            List<String> FaildrIDs = new ArrayList<String>();
+            int medicalRes = 1;
             while (rs.next()) {
                 //fetch this request ID 
                 Blob b = rs.getBlob("photo");
                 byte[] ba = b.getBytes(1, (int) b.length());
                 photo64 = new String(ba);
 
-                if(rs.getString("inspection_status").equals("N")){
-                medicalRes = 2;
+                if (rs.getString("inspection_status").equals("N")) {
+                    medicalRes = 2;
+                } else if (rs.getString("inspection_status").equals("C")) {
+                    medicalRes = 1;
                 }
-                else if(rs.getString("inspection_status").equals("C")){
-                medicalRes = 1;
-                }
-                
-                String json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getTimestamp("request_date").toString() + "\",\"MedicalCheckupResults\": "+medicalRes+",\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
+
+                String json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getTimestamp("request_date").toString() + "\",\"MedicalCheckupResults\": " + medicalRes + ",\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
 
                 Thread.sleep(3000);
-
-                // int res = sendPOST("http://192.168.235.54/drvintegration/API/MedicalCheckup/NotifyResults", json, rs.getString("requestID"));
-                int res = sendPOST("http://localhost:8997/drvintegration_test/API/MedicalCheckup/NotifyResults", json, rs.getString("requestID"));
-                if(res == 0) rIDs.add(rs.getString("requestID"));
-                if(res != 0) FaildrIDs.add(rs.getString("requestID"));
+                //sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
+                int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, rs.getString("requestID"));
+                //  int res = sendPOST("http://localhost:8997/drvintegration_test/API/MedicalCheckup/NotifyResults", json, rs.getString("requestID"));
+                if (res == 0) {
+                    rIDs.add(rs.getString("requestID"));
+                }
+                if (res != 0) {
+                    FaildrIDs.add(rs.getString("requestID"));
+                }
 //                        int count = 0;
 //                        while(res == 1 || res == -1){
 //                            if(count == 4) break;
