@@ -8,6 +8,7 @@
 import com.aman.medical.db.getcon;
 
 import com.google.gson.JsonObject;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -164,6 +165,33 @@ public class biometric extends HttpServlet {
 
     }
 
+    private File compressImage(String filePath, float compressionQuality) throws IOException {
+   
+      File input = new File(filePath);
+      BufferedImage image = ImageIO.read(input);
+      
+      File compressedImageFile = File.createTempFile("tmp", ".jpg");;
+      OutputStream os =new FileOutputStream(compressedImageFile);
+
+      Iterator<ImageWriter>writers =  ImageIO.getImageWritersByFormatName("jpg");
+      ImageWriter writer = (ImageWriter) writers.next();
+
+      ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+      writer.setOutput(ios);
+
+      ImageWriteParam param = writer.getDefaultWriteParam();
+      
+      param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+      param.setCompressionQuality(compressionQuality);
+      writer.write(null, new IIOImage(image, null, null), param);
+      
+      os.close();
+      ios.close();
+      writer.dispose();
+      
+      return compressedImageFile;
+   }
+
     private static int sendPOST(String POST_URL, String POST_PARAMS, String TrackID) throws IOException {
         System.out.println("JSON is " + POST_PARAMS);
         FileWriter file = new FileWriter("E:\\Biometrics\\log_request.txt");
@@ -209,6 +237,49 @@ public class biometric extends HttpServlet {
         } else {
             return -1;
         }
+    }
+
+    
+    
+    public File resize(String inputImagePath, int scaledHeight)
+            throws IOException {
+        // reads input image
+        File inputFile = new File(inputImagePath);
+        BufferedImage inputImage = ImageIO.read(inputFile);
+
+        int currentHeight = inputImage.getHeight();
+        int currentWidth = inputImage.getWidth();
+
+        int scaledWidth ;
+
+        scaledWidth = (scaledHeight * currentWidth) / currentHeight;
+
+        System.out.println("currentHeight=" + currentHeight);
+        System.out.println("currentWidth= " + currentWidth);
+        System.out.println("scaledHeight=" + scaledHeight);
+        System.out.println("scaledWidth=" + scaledWidth);
+
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+                scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+       File newFile = File.createTempFile("tmp", ".jpg");
+       
+        // extracts extension of output file
+//        String formatName = outputImagePath.substring(outputImagePath
+//                .lastIndexOf(".") + 1);
+//
+//        File newFile = new File(outputImagePath);
+        // writes to output file
+        ImageIO.write(outputImage, "jpg", newFile);
+
+        return newFile;
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -280,16 +351,12 @@ public class biometric extends HttpServlet {
                 }
                 BufferedImage image = ImageIO.read(f);
 
-                File compressedImageFile = new File(f.getAbsolutePath());
-//                OutputStream os = new FileOutputStream(compressedImageFile);
-//                Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
-//                ImageWriter writer = (ImageWriter) writers.next();
-//                ImageOutputStream ios = ImageIO.createImageOutputStream(os);
-//                writer.setOutput(ios);
-//                ImageWriteParam param = writer.getDefaultWriteParam();
-//                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-//                param.setCompressionQuality(0.7f);
-//                writer.write(null, new IIOImage(image, null, null), param);
+     
+//                File compressedImageFile = new File(f.getAbsolutePath());
+              
+                System.out.println("master file size : " + f.length());
+               File compressedImageFile = resize(f.getAbsolutePath(),200);
+               System.out.println("compressed file size : " + compressedImageFile.length());
 //                
 //                os.close();
 //                ios.close();
@@ -298,6 +365,7 @@ public class biometric extends HttpServlet {
                 // get compressed as bas64
                 FileInputStream fileInputStreamReader = new FileInputStream(compressedImageFile);
                 byte[] bytes = new byte[(int) compressedImageFile.length()];
+                
                 fileInputStreamReader.read(bytes);
                 photo64 = new String(Base64.encodeBase64(bytes), "UTF-8");
                 fileInputStreamReader.close();
@@ -314,6 +382,8 @@ public class biometric extends HttpServlet {
 //                file.close();
             }
 
+            
+           
 //            
 //            System.out.println(filePart);
 //            if (filePart != null) {
@@ -339,6 +409,7 @@ public class biometric extends HttpServlet {
 //                inputStream1.close();
 //
 //            }
+
             Connection Con = null;
             Statement stmt = null, stmt1 = null, stmt2 = null, stmt3 = null;
 
