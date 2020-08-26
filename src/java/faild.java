@@ -208,9 +208,18 @@ public class faild extends HttpServlet {
                 }
                          //      {\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID                 + ",\"MedicalCheckupID\": \"" + transID                          + "\",\"MedicalCheckupDate\": \"" + eye_request_date               + "\",\"MedicalCheckupResults\":                  2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}} 
                
+                         String finalMedicalCond = "[]";
+                         if(rs.getString("medical_conditions") != null)
+                         {
+                         if(!rs.getString("medical_conditions").equals("null") && !rs.getString("medical_conditions").isEmpty())
+                         {
+                            finalMedicalCond = rs.getString("medical_conditions");
                          
-                         String json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getString("eyes_exam_date") + "\",\"MedicalCheckupResults\": " + medicalRes + ",\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": "+rs.getString("medical_conditions")+"}}";
-                         String log = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getString("eyes_exam_date") + "\",\"MedicalCheckupResults\": " + medicalRes + ",\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": "+rs.getString("medical_conditions")+"}}";
+                         }
+                         }
+                         
+                         String json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getString("eyes_exam_date") + "\",\"MedicalCheckupResults\": " + medicalRes + ",\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": "+finalMedicalCond+"}}";
+                         String log = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + rs.getString("requestID") + ",\"MedicalCheckupID\": \"" + rs.getString("MedicalCheckupID") + "\",\"MedicalCheckupDate\": \"" + rs.getString("eyes_exam_date") + "\",\"MedicalCheckupResults\": " + medicalRes + ",\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + rs.getString("blood_group") + "\",\"BioPath\": \"\",\"MedicalConditions\": "+finalMedicalCond+"}}";
 
                          
                 int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + log + "' , '" + rs.getString("requestID") + "')");
