@@ -49,7 +49,7 @@ public class GetClient extends HttpServlet {
             Connection Con = null;
             Statement stmt = null, stmt1 = null;
             //  String sql = "select mi.paymentnotify.ApplicantName , mi.paymentnotify.NationalID , mi.paymentnotify.PassportIssueCountry , mi.paymentnotify.PassportNo , mi.paymentnotify.LicenseType , mi.paymentnotify.TrafficUnit , mi.paymentnotify.TotalAmount , mi.paymentnotify.requestID , mi.paymentnotify.queueNumber from mi.paymentnotify  where  mi.paymentnotify.Date = date(now()) and  mi.paymentnotify.TrafficUnit = '"+ request.getSession().getAttribute("TRAFFIC_UNIT").toString() + "' order by mi.paymentnotify.queueNumber;";
-            String sql = "select mi.clients_data.eyes_inspection_result , mi.clients_data.internal_inspection_result , mi.clients_photos.photo , mi.clients_data.Name , mi.clients_data.national_id , mi.clients_data.PassportIssueCountry , mi.clients_data.PassportNo , mi.clients_data.LicenseType , mi.clients_data.TrafficUnit , mi.clients_data.TotalAmount , mi.clients_data.requestID , mi.clients_data.queue from mi.clients_data , mi.clients_photos  where mi.clients_data.requestID = mi.clients_photos.requestID and  mi.clients_data.TrafficUnit = '" + request.getSession().getAttribute("TRAFFIC_UNIT").toString() + "' and ( mi.clients_data.requestID  = '" + rid + "' or mi.clients_data.national_id = '" + nid + "' or  mi.clients_data.PassportNo = '" + nid + "' );";
+            String sql = "select mi.clients_data.eyes_inspection_result , mi.clients_data.internal_inspection_result  , mi.clients_data.Name , mi.clients_data.national_id , mi.clients_data.PassportIssueCountry , mi.clients_data.PassportNo , mi.clients_data.LicenseType , mi.clients_data.TrafficUnit , mi.clients_data.TotalAmount , mi.clients_data.requestID , mi.clients_data.queue from mi.clients_data  where  mi.clients_data.TrafficUnit = '" + request.getSession().getAttribute("TRAFFIC_UNIT").toString() + "' and ( mi.clients_data.requestID  = '" + rid + "' or mi.clients_data.national_id = '" + nid + "' or  mi.clients_data.PassportNo = '" + nid + "' );";
 
             getcon c = new getcon();
 
@@ -80,13 +80,17 @@ public class GetClient extends HttpServlet {
                 String internInsp = "";
                 String ocuInsp = "";
                 String status = "";
-//                if (rs1.first()) {
-                if (rs.getBlob("photo") != null) {
-                    photoAction = "تعديل الصورة";
-                } else {
-                    photoAction = "إلتقاط الصورة";
 
+              stmt1 = Con.createStatement();
+              String photoSQL = "select * from mi.clients_photos where requestID = '"+rid+"' or mi.clients_photos.national_id = '" + nid + "'";
+            ResultSet rs1 = stmt1.executeQuery(photoSQL);
+             photoAction = "إلتقاط الصورة";
+                if (rs1.first()) {
+                if (rs1.getBlob("photo") != null) {
+                    photoAction = "تعديل الصورة";
                 }
+            }
+                stmt1.close();
                 internInsp = rs.getString("internal_inspection_result");
                 ocuInsp = rs.getString("eyes_inspection_result");
                 //                } 

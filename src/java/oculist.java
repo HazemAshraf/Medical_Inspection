@@ -457,18 +457,22 @@ public class oculist extends HttpServlet {
                     }
                     stmt1.close();
                     String json = "";
+                     String final_medical_cond = "[]";
                     if (medical_conditions_str != null) {
+                    final_medical_cond = medical_conditions_str;
+                    }
+             //       if (medical_conditions_str != null) {
                         //json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": "+medical_conditions_str+"}}";
 
-                        json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + medical_conditions_str + "}}";
-                    } else {
+                        json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
+                  //  } else {
                         //json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": []}}";
 
-                        json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
+                    //    json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
 
-                    }
+                  //  }
 
-                    String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
+                    String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": "+final_medical_cond+"}}";
 
                     Statement stmt5 = null;
 
@@ -540,23 +544,27 @@ public class oculist extends HttpServlet {
                         }
                         stmt1.close();
                         String json = "";
+                         String final_medical_cond = "[]";
+                    if (medical_conditions_str != null) {
+                    final_medical_cond = medical_conditions_str;
+                    }
                      //   System.out.println(photo64);
-                        if (medical_conditions_str != null) {
+                      //  if (medical_conditions_str != null) {
                             //    json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \""+photo64+"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": "+medical_conditions_str+"}}";
 
-                            json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + medical_conditions_str + "}}";
+                            json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
 
-                        } else {
+                      //  } else {
                             //  json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \""+photo64+"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": []}}";
 
-                            json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
+                       //     json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
 
-                        }
-                        String medicalCond = "";
-                        if (medical_conditions_str != null) {
-                            medicalCond = medical_conditions_str;
-                        }
-                        String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + medicalCond + "}}";
+                      //  }
+//                        String medicalCond = "";
+//                        if (medical_conditions_str != null) {
+//                            medicalCond = medical_conditions_str;
+//                        }
+                        String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
 
                         Statement stmt5 = null;
 
