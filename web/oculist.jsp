@@ -278,7 +278,7 @@ stmt.close();
                                             stmt2 = Con.createStatement();
                                             ResultSet rs2 = stmt2.executeQuery("select * from mi.passport_issue_country");
                                             while (rs2.next()) {
-                                        %><option value="<%= rs2.getString("description")%>"><%= rs2.getString("description")%></option><%
+                                        %><option value="<%= rs2.getString("lookUp_ID")%>"><%= rs2.getString("description")%></option><%
                                             }
                                             stmt2.close();
                                             Con.close();
