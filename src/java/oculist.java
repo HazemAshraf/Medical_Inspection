@@ -5,7 +5,9 @@
  */
 
 //import com.google.common.base.Strings;
+import com.aman.medical.db.CRUD;
 import com.aman.medical.db.getcon;
+import com.aman.medical.integration.SendRequest;
 
 import com.google.gson.JsonObject;
 import java.io.BufferedReader;
@@ -41,6 +43,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -210,19 +214,21 @@ public class oculist extends HttpServlet {
                     Con = c.myconnection();
                     stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_success (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
-                    int updated1 = stmt.executeUpdate("update mi.clients_data set notified = 1 where requestID = '"+requestID+"'");
-                   
+                    int updated1 = stmt.executeUpdate("update mi.clients_data set notified = 1 where requestID = '" + requestID + "'");
+
                     stmt.close();
                     Con.close();
                     return 0;
                 } else {
-                    int codeReturn =1;
-                    if(response.toString().contains("\"errorCode\":-4")) codeReturn = -4;
+                    int codeReturn = 1;
+                    if (response.toString().contains("\"errorCode\":-4")) {
+                        codeReturn = -4;
+                    }
                     //write to database that this faild notified request
                     Con = c.myconnection();
                     stmt = Con.createStatement();
                     int updated = stmt.executeUpdate("insert into mi.log_faild (response,requestID) values ('" + response.toString() + "' , '" + requestID + "')");
-                     int updated1 = stmt.executeUpdate("update mi.clients_data set notified = 0 where requestID = '"+requestID+"'");
+                    int updated1 = stmt.executeUpdate("update mi.clients_data set notified = 0 where requestID = '" + requestID + "'");
                     stmt.close();
                     Con.close();
                     return codeReturn;
@@ -234,7 +240,7 @@ public class oculist extends HttpServlet {
             Con = c.myconnection();
             stmt = Con.createStatement();
             int updated = stmt.executeUpdate("insert into mi.log_faild (response,requestID) values ('NO JSON COME FROM OTHER SIDE' , '" + requestID + "')");
-             int updated1 = stmt.executeUpdate("update mi.clients_data set notified = -1 where requestID = '"+requestID+"'");
+            int updated1 = stmt.executeUpdate("update mi.clients_data set notified = -1 where requestID = '" + requestID + "'");
             stmt.close();
             Con.close();
             return -1;
@@ -256,8 +262,8 @@ public class oculist extends HttpServlet {
             String propFileName = "config.properties";
 
             //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-             inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
-           // inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+            inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+            // inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
             if (inputStream != null) {
                 prop.load(inputStream);
             } else {
@@ -287,20 +293,6 @@ public class oculist extends HttpServlet {
             String result = request.getParameter("result");
             String blood_group = request.getParameter("blood_group");
 
-            String bioPath = "";
-
-            if (nationalID != null && !(nationalID.isEmpty())) {
-                bioPath = "http://192.168.235.76:8080/biometric/" + nationalID + ".pdf"; // to be accissble from outside 
-
-            } else {
-                bioPath = "http://192.168.235.76:8080/biometric/" + theCountry + passNo + ".pdf";
-            }
-//                    if(nationalID != null && !(nationalID.isEmpty())){
-//                  bioPath = "http:192.168.235.76\\\\API\\\\Biometrics\\\\" + nationalID + ".pdf";
-//                    }
-//                    else{
-//                     bioPath = "http:192.168.235.76\\\\API\\\\Biometrics\\\\" + theCountry+passNo + ".pdf";
-//                    }
             String[] medical_conditions = request.getParameterValues("medical_conditions");
             String medical_conditions_str = null;
             if (medical_conditions != null) {
@@ -336,8 +328,8 @@ public class oculist extends HttpServlet {
             sql = "select requestID,MedicalCheckupID,request_date,nationality,national_id,PassportNo,eyes_inspection_result,internal_inspection_result,blood_group,hasPhoto from mi.clients_data where requestID = '" + requestID_UI + "'";
 
             ResultSet rs = stmt.executeQuery(sql);
-            String nationality = "", national_id = "", passport_no = "", passport_expiryDT = "", country = "", client_nameA = "",
-                    client_nameE = "", requestID = "", gender = "", request_status = "", request_date = "", license_type = "", transaction_id = "", eye_request_date = "";
+            String nationality = "", national_id = "", passport_no = "", passport_expiryDT = "", country = "",
+                    requestID = "", request_status = "", request_date = "", license_type = "", transaction_id = "", eye_request_date = "";
 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDateTime now = LocalDateTime.now();
@@ -348,26 +340,17 @@ public class oculist extends HttpServlet {
             if (rs.first()) {
                 //get request information
                 requestID = rs.getString("requestID");
-                //   System.out.println("requestID in oculist is : " + requestID);
                 transID = rs.getString("MedicalCheckupID");
-
                 request_date = String.valueOf(rs.getTimestamp("request_date"));
                 blood_group = rs.getString("blood_group");
-                // transaction_id = rs.getString("transaction_id");
                 int hasPhoto = rs.getInt("hasPhoto");
-                //  System.out.println("photo byte : "+b.getBytes(1, (int) b.length()).toString());
                 if (hasPhoto != 1) {
                     out.println("<script type='text/javascript'>");
-
                     out.println("alert('تأكد من إلتقاط صورة');");
                     out.println("location='oculist.jsp';");
-                    //request.getRequestDispatcher("Batna/n.jsp").forward(request, response);
-                    // out.println("location='Batna/n.jsp';");
-                    // out.println ("window.location.href = 'Batna/n.jsp'");
                     out.println("</script>");
                     stmt.close();
                     Con.close();
-                    // response.sendRedirect(request.getContextPath() + "/Batna/n.jsp");
                     return;
                 }
 
@@ -381,8 +364,6 @@ public class oculist extends HttpServlet {
                 if (passport_no == null) {
                     passport_no = "";
                 }
-//              passport_expiryDT = rs.getString("passport_expiryDT");
-//              if(passport_expiryDT == null) passport_expiryDT = "";
                 country = rs.getString("nationality");
                 if (country == null) {
                     country = "";
@@ -391,26 +372,7 @@ public class oculist extends HttpServlet {
                 eyeInspRes = rs.getString("eyes_inspection_result");
                 internInspRes = rs.getString("internal_inspection_result");
             }
-            // if(!BioInsp(Con, requestID) || !ImageInsp(Con, requestID)){
-//                       if(!BioInsp(Con, requestID)){
-//                    out.println ("<script type='text/javascript'>");
-//
-//             out.println ("alert('تأكد من اجراء فحص الفيش');");
-//              out.println("location='internist.jsp';");
-//           //request.getRequestDispatcher("Batna/n.jsp").forward(request, response);
-//          // out.println("location='Batna/n.jsp';");
-//             // out.println ("window.location.href = 'Batna/n.jsp'");
-//             out.println ("</script>");
-//
-//            // response.sendRedirect(request.getContextPath() + "/Batna/n.jsp");
-//             return;
-//              }
 
-            // if(checkDuplicate(Con , transID )){
-            //   String eyeInspRes = getEyeInspRes(Con, requestID);
-            //  String internInspRes = getInternInspRes(Con, requestID);
-            //  String InspRes = InspRes(Con, requestID);
-//                if(!(eyeInspRes.equals(result))){
             stmt = Con.createStatement();
             boolean intNotAcc = false;
             if (internInspRes == null) {
@@ -421,32 +383,25 @@ public class oculist extends HttpServlet {
             }
             if (internInspRes.equals("nacc")) {
                 intNotAcc = true;
-
-//                     JsonObject json = new JsonObject();
-//                     json.addProperty("RequestID", requestID);
-//                            json.addProperty("MedicalCheckupID", transID);
-//                            json.addProperty("MedicalCheckupDate", eye_request_date);
-//                            json.addProperty("MedicalCheckupResults", "faild");
-//                            json.addProperty("MedicalCheckupPhoto", "");
-//                            json.addProperty("MedicalConditions", "faild");
-//                                 int res = sendPOST("http://localhost:8080/API/MedicalCheckup/NotifyResults", json.toString() , "1");
-//                         if(res == 0){System.out.println("0");}
-//                        else if(res == 1){System.out.println("1");}
-//                        else System.out.println("unknown error");
                 out.println("<script type='text/javascript'>");
-
                 out.println("alert(' الرجاء اعادة كشف الباطنة');");
                 out.println("location='oculist.jsp';");
-                //response.sendRedirect(request.getContextPath() + "../Nazar/index.jsp");
-                //out.println("location='../Nazar/index.jsp';");
-
                 out.println("</script>");
                 stmt.close();
                 Con.close();
                 return;
             }
+             CRUD crud = new CRUD();
             if (result.equals("nacc")) {
-                stmt.executeUpdate("update `clients_data` set `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'N' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
+                Map<String, String> params = new HashMap<>();
+                params.put("blood_group", blood_group);
+                params.put("eyes_inspection_result", result);
+                params.put("inspection_status", "N");
+                params.put("eyes_exam_date", eye_request_date);
+                params.put("right_eye_degree", Reye);
+                params.put("left_eye_degree", Leye);
+                crud.update(Con, "clients_data", "WHERE `requestID` ='" + requestID + "'", params);
+                // stmt.executeUpdate("update `clients_data` set `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'N' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
                 if (intNotAcc) {
                     sql = "select photo from mi.clients_photos where requestID = '" + requestID_UI + "'";
                     ResultSet rs1 = stmt1.executeQuery(sql);
@@ -457,84 +412,83 @@ public class oculist extends HttpServlet {
                     }
                     stmt1.close();
                     String json = "";
-                     String final_medical_cond = "[]";
+                    String final_medical_cond = "[]";
                     if (medical_conditions_str != null) {
-                    final_medical_cond = medical_conditions_str;
+                        final_medical_cond = medical_conditions_str;
                     }
-             //       if (medical_conditions_str != null) {
-                        //json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": "+medical_conditions_str+"}}";
 
-                        json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
-                  //  } else {
-                        //json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": []}}";
+                    json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
+                    String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
 
-                    //    json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
-
-                  //  }
-
-                    String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 2,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": "+final_medical_cond+"}}";
-
-                    Statement stmt5 = null;
-
-                    stmt5 = Con.createStatement();
-                    int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
-                    stmt5.close();
-                    stmt.close();
+                    // Statement stmt5 = null;
+                    // stmt5 = Con.createStatement();
+                    params = new HashMap<>();
+                    params.put("request", jsonRequest);
+                    params.put("requestID", requestID);
+                    crud.insert(Con, "mi.log_success_request", params);
+                    // int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
+                    // stmt5.close();
+                    //  stmt.close();
                     Con.close();
-                    int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
 
-                    //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
+                    SendRequest sr = new SendRequest();
+                    sr.setURL("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults");
+                    sr.setPARAMS(json);
+                    sr.setRequestID(requestID);
+                    int res = sr.sendPOST();
+                    //  int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
                     if (res == 0) {
-                        // System.out.println("0");
-
                         out.println("<script type='text/javascript'>");
-
                         out.println("alert('تم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-
                         return;
-
                     } else if (res == 1) {
-                        out.println("there is error in inputs");
-                        //  System.out.println("1");
                         out.println("<script type='text/javascript'>");
-
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-
                         return;
-                    }
-                    else if (res == -4){
-                         out.println("there is error in inputs");
-                        //  System.out.println("1");
+                    } else if (res == -4) {
                         out.println("<script type='text/javascript'>");
-
                         out.println("alert('  برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص حيث انه تم الرد من قبل علي هذه المعاملة');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-
                         return;
-                    }
-                    else {
-                        out.println("otherwise error");
-                        //  System.out.println("unknown error");
+                    } else {
                         out.println("<script type='text/javascript'>");
-
                         out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                         out.println("location='oculist.jsp';");
                         out.println("</script>");
-
                         return;
                     }
                 }
             } else {
                 if (internInspRes.isEmpty()) {
-                    stmt.executeUpdate("update `clients_data` set `medical_conditions` = '" + medical_conditions_str + "' , `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'W' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
+                    Map<String, String> params = new HashMap<>();
+                    params.put("blood_group", blood_group);
+                    params.put("medical_conditions", medical_conditions_str);
+                    params.put("eyes_inspection_result", result);
+                    params.put("inspection_status", "W");
+                    params.put("right_eye_degree", Reye);
+                    params.put("left_eye_degree", Leye);
+                    params.put("eyes_exam_date", eye_request_date);
+                    crud.update(Con, "clients_data", "WHERE `requestID` ='" + requestID + "'", params);
+                    // stmt.executeUpdate("update `clients_data` set `medical_conditions` = '" + medical_conditions_str + "' , `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'W' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
                 } else {
                     if ((internInspRes.equals("acc") && result.equals("acc")) || (internInspRes.equals("sacc") && result.equals("acc")) || (internInspRes.equals("acc") && result.equals("sacc")) || (internInspRes.equals("sacc") && result.equals("sacc"))) {
-                        stmt.executeUpdate("update `clients_data` set `medical_conditions` = '" + medical_conditions_str + "' , `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'C' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
+
+                        Map<String, String> params = new HashMap<>();
+                        params.put("blood_group", blood_group);
+                        params.put("medical_conditions", medical_conditions_str);
+                        params.put("eyes_inspection_result", result);
+                        params.put("inspection_status", "C");
+                        params.put("eyes_exam_date", eye_request_date);
+                        params.put("right_eye_degree", Reye);
+                        params.put("left_eye_degree", Leye);
+                        crud.update(Con, "clients_data", "WHERE `requestID` ='" + requestID + "'", params);
+
+                        // stmt.executeUpdate("update `clients_data` set `medical_conditions` = '" + medical_conditions_str + "' , `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'C' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
                         sql = "select photo from mi.clients_photos where requestID = '" + requestID_UI + "'";
                         ResultSet rs1 = stmt1.executeQuery(sql);
                         if (rs1.first()) {
@@ -544,43 +498,34 @@ public class oculist extends HttpServlet {
                         }
                         stmt1.close();
                         String json = "";
-                         String final_medical_cond = "[]";
-                    if (medical_conditions_str != null) {
-                    final_medical_cond = medical_conditions_str;
-                    }
-                     //   System.out.println(photo64);
-                      //  if (medical_conditions_str != null) {
-                            //    json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \""+photo64+"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": "+medical_conditions_str+"}}";
+                        String final_medical_cond = "[]";
+                        if (medical_conditions_str != null) {
+                            final_medical_cond = medical_conditions_str;
+                        }
 
-                            json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
+                        json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
 
-                      //  } else {
-                            //  json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": "+requestID+",\"MedicalCheckupID\": \""+transID+"\",\"MedicalCheckupDate\": \""+eye_request_date+"\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \""+photo64+"\",\"BloodGroup\": \"\",\"BioPath\": \""+bioPath+"\",\"MedicalConditions\": []}}";
-
-                       //     json = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"" + photo64 + "\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": []}}";
-
-                      //  }
-//                        String medicalCond = "";
-//                        if (medical_conditions_str != null) {
-//                            medicalCond = medical_conditions_str;
-//                        }
                         String jsonRequest = "{\"header\": {\"version\": \"1.0\",\"category\": \"request\",\"service\": \" TIT_Medical_Results \",\"timestamp\": \"03-09-2018 13:19\",\"tid\": \"594f2c57-e0d6-4311-87ffac491c4337dd\"},\"body\": {\"RequestID\": " + requestID + ",\"MedicalCheckupID\": \"" + transID + "\",\"MedicalCheckupDate\": \"" + eye_request_date + "\",\"MedicalCheckupResults\": 1,\"MedicalCheckupPhoto\": \"\",\"BloodGroup\": \"" + blood_group + "\",\"BioPath\": \"\",\"MedicalConditions\": " + final_medical_cond + "}}";
 
-                        Statement stmt5 = null;
-
-                        stmt5 = Con.createStatement();
-                        int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
-                        stmt5.close();
-                        stmt.close();
+                        //Statement stmt6 = null;
+                        // stmt6 = Con.createStatement();
+                        params = new HashMap<>();
+                        params.put("request", jsonRequest);
+                        params.put("requestID", requestID);
+                        crud.insert(Con, "mi.log_success_request", params);
+                        // int updated = stmt6.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
+                        // stmt6.close();
+                        // stmt.close();
                         Con.close();
-                        int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
+                        SendRequest sr = new SendRequest();
+                        sr.setURL("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults");
+                        sr.setPARAMS(json);
+                        sr.setRequestID(requestID);
+                        int res = sr.sendPOST();
 
-                        //   int res = sendPOST("/API/MedicalCheckup/NotifyResults", json , "1");
+                        //  int res = sendPOST("http://" + IP + "/" + API_CTX + "/API/MedicalCheckup/NotifyResults", json, requestID);
                         if (res == 0) {
-                            //   System.out.println("0");
-                            //   System.out.println("200 OK response");
                             out.println("<script type='text/javascript'>");
-
                             out.println("alert('تم إرسال الكشف الي نظام التراخيص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
@@ -588,29 +533,20 @@ public class oculist extends HttpServlet {
                             return;
 
                         } else if (res == 1) {
-                            out.println("there is error in inputs");
-                            //    System.out.println("1");
-                            //     System.out.println("Error -> NOT 200 OK response");
                             out.println("<script type='text/javascript'>");
-
                             out.println("alert('برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص');");
                             out.println("location='oculist.jsp';");
                             out.println("</script>");
 
                             return;
-                        }
-                         else if (res == -4){
-                         out.println("there is error in inputs");
-                        //  System.out.println("1");
-                        out.println("<script type='text/javascript'>");
+                        } else if (res == -4) {
+                            out.println("<script type='text/javascript'>");
+                            out.println("alert('  برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص حيث انه تم الرد من قبل علي هذه المعاملة');");
+                            out.println("location='oculist.jsp';");
+                            out.println("</script>");
 
-                        out.println("alert('  برجاء التواصل مع نظام التراخيص لعدم ارسال الفحص حيث انه تم الرد من قبل علي هذه المعاملة');");
-                        out.println("location='oculist.jsp';");
-                        out.println("</script>");
-
-                        return;
-                    }
-                         else {
+                            return;
+                        } else {
                             out.println("otherwise error");
                             //   System.out.println("not 1 or 0 response error message code");
                             //   System.out.println("Error -> NOT 200 OK response");
