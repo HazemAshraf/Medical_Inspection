@@ -244,7 +244,7 @@ public class paymentNotification extends HttpServlet {
                         params.put("bloodFees", finalBloodFees); // 85
                     }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
-                    obj.setTotalAmount(String.valueOf(Integer.parseInt(medicalFees) + Integer.parseInt(bloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
+                    obj.setTotalAmount(String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
 
                     //check school rules....
                     stmt = null;
@@ -336,7 +336,7 @@ public class paymentNotification extends HttpServlet {
                         params.put("bloodFees", finalBloodFees); // 85
                     }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
-                    obj.setTotalAmount(String.valueOf(Integer.parseInt(medicalFees) + Integer.parseInt(bloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
+                    obj.setTotalAmount(String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
 
                     //check school rules....
                     stmt = null;
