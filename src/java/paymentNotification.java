@@ -95,14 +95,17 @@ public class paymentNotification extends HttpServlet {
         String totalAmountSchoolOld = "";
         String totalAmountNormal = "";
         String applicationType = "";
+        String identityNoAndPhotography = "";
+        String openElecFile = "";
+        String drivingElecTutorials = "";
         InputStream inputStream = null;
         try {
             Properties prop = new Properties();
             String propFileName = "config.properties";
 
             //inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-            //  inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
-            inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
+           // inputStream = new FileInputStream("C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\conf\\config.properties");
+             inputStream = new FileInputStream("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\conf\\config.properties");
 
             if (inputStream != null) {
                 prop.load(inputStream);
@@ -121,6 +124,9 @@ public class paymentNotification extends HttpServlet {
             totalAmountSchoolOld = prop.getProperty("total_amount_school_old");
             totalAmountNormal = prop.getProperty("total_amount_normal");
             applicationType = prop.getProperty("applicationType");
+            identityNoAndPhotography = prop.getProperty("identityNoAndPhotography");
+            openElecFile = prop.getProperty("openElecFile");
+            drivingElecTutorials = prop.getProperty("drivingElecTutorials");
 
             System.out.println("ip running : " + loadedIp + " and the api context : " + loadedNattingIp);
         } catch (Exception e) {
@@ -128,14 +134,14 @@ public class paymentNotification extends HttpServlet {
         } finally {
             inputStream.close();
         }
-        
-        if (applicationType.equals("MEDICAL")){
-		PrintWriter out = response.getWriter();
-                JsonObject error =  new JsonObject();
-		error.addProperty("ERROR", "you are trying to pay on medical applciation");
-		out.write(error.toString());
-                return;
-	}
+
+        if (applicationType.equals("MEDICAL")) {
+            PrintWriter out = response.getWriter();
+            JsonObject error = new JsonObject();
+            error.addProperty("ERROR", "you are trying to pay on medical applciation");
+            out.write(error.toString());
+            return;
+        }
 
         Map properties = new HashMap();
         properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306/mi?zeroDateTimeBehavior=convertToNull&characterEncoding=UTF8&jdbcCompliantTruncation=false&serverTimezone=UTC");
@@ -172,7 +178,7 @@ public class paymentNotification extends HttpServlet {
 
         if (a == null) {
             PrintWriter out = response.getWriter();
-            JsonObject error =  new JsonObject();
+            JsonObject error = new JsonObject();
             error.addProperty("Error Message", "invalid serviceID");
             out.write(error.toString());
             return;
@@ -227,14 +233,21 @@ public class paymentNotification extends HttpServlet {
                 //Paymentnotify p = new Paymentnotify();
                 List<Paymentnotify> listp = entityManager.createNamedQuery("Paymentnotify.findByRequestID", Paymentnotify.class).setParameter("requestID", obj.getRequestID()).getResultList();
                 // System.out.println("aaaaaaaaaaaaaaaaaaaaa "+p);
-                 String finalMedicalFees = "0";
+                String finalMedicalFees = "0";
                 String finalBloodFees = "0";
+                String finalAdditionalFeesNormal = String.valueOf(Integer.parseInt(openElecFile) + Integer.parseInt(drivingElecTutorials) + Integer.parseInt(identityNoAndPhotography));
+               String finalTotal = "0";
+                System.out.println("Final Additiona Feees "+ finalAdditionalFeesNormal);                
+//  String finalTotalAmountNormal = "";
                 String username = "";
                 String password = "";
                 if (listp.size() > 0) {
                     username = listp.get(0).getEusername();
                     password = listp.get(0).getEpassword();
-                     params.put("totalAmount", totalAmountNormal); // 650
+                    params.put("identityNoAndPhotography", identityNoAndPhotography); // 0
+                    params.put("openElecFile", openElecFile); // 0
+                    params.put("drivingElecTutorials", drivingElecTutorials); // 0
+                    params.put("totalAmount", finalTotal); // 0
                     params.put("medicalFees", finalMedicalFees); // 200
                     params.put("bloodFees", finalBloodFees); // 85
                     if (obj.getPayedElements().contains("Medical")) {
@@ -242,9 +255,12 @@ public class paymentNotification extends HttpServlet {
                         finalBloodFees = bloodFees;
                         params.put("medicalFees", finalMedicalFees); // 200
                         params.put("bloodFees", finalBloodFees); // 85
+                        finalTotal = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(finalAdditionalFeesNormal));
+                       
+                        params.put("totalAmount", finalTotal); // 650
                     }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
-                    obj.setTotalAmount(String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
+                    obj.setTotalAmount(finalTotal); // 200+85
 
                     //check school rules....
                     stmt = null;
@@ -258,8 +274,10 @@ public class paymentNotification extends HttpServlet {
                     while (rs.next()) {
                         if (obj.getTrafficUnit().contains(rs.getString("name"))) {
                             // Renew (old)
-                            jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            //   jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
                             totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesOld));
+                            params.put("newOrRenewTxt", "تدريب رخصة القيادة القديمة");
                             params.put("totalAmount", totalAmountSchoolOld); // 1685
                             params.put("medicalFees", finalMedicalFees); // 200
                             params.put("bloodFees", finalBloodFees); // 85
@@ -267,8 +285,9 @@ public class paymentNotification extends HttpServlet {
                             obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
 
                             if (obj.getPayedElements().contains("E-Exam")) { // new
-                                jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
+                                //    jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
                                 totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesNew));
+                                params.put("newOrRenewTxt", "تدريب رخصة القيادة الجديدة");
                                 params.put("totalAmount", totalAmountSchoolNew); // 2085
                                 params.put("medicalFees", finalMedicalFees); // 200
                                 params.put("bloodFees", finalBloodFees); // 85
@@ -287,20 +306,15 @@ public class paymentNotification extends HttpServlet {
 
                     //insert new record with requestID at clients data on 192.168.235.76
                     //check if exist first
-                    
-                   
                     getcon getcon = new getcon();
-              
+
                     getconMedicalServer getcon1 = new getconMedicalServer();
-                
-                    
-                    
-                     if(applicationType.equals("ALL")){
-                    Con1 = getcon.myconnection();
-                     }
-                     else{
-                     Con1 = getcon1.myconnection();
-                     }
+
+                    if (applicationType.equals("ALL")) {
+                        Con1 = getcon.myconnection();
+                    } else {
+                        Con1 = getcon1.myconnection();
+                    }
                     if (Con1 != null) {
                         System.out.println("Database connection to server 76 done successfully");
                     }
@@ -325,18 +339,23 @@ public class paymentNotification extends HttpServlet {
 
                     //  obj1.addProperty("Error Message", "This request ID was used before");
                 } else {
-
-                   params.put("totalAmount", totalAmountNormal); // 650
-                    params.put("medicalFees", finalMedicalFees); // 200
-                    params.put("bloodFees", finalBloodFees); // 85
+                    params.put("identityNoAndPhotography", identityNoAndPhotography); // 0
+                    params.put("openElecFile", openElecFile); // 0
+                    params.put("drivingElecTutorials", drivingElecTutorials); // 0
+                    params.put("totalAmount", finalTotal); // 0
+                    params.put("medicalFees", finalMedicalFees); // 0
+                    params.put("bloodFees", finalBloodFees); // 0
                     if (obj.getPayedElements().contains("Medical")) {
                         finalMedicalFees = medicalFees;
                         finalBloodFees = bloodFees;
                         params.put("medicalFees", finalMedicalFees); // 200
                         params.put("bloodFees", finalBloodFees); // 85
+                        finalTotal = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(finalAdditionalFeesNormal));
+                       
+                        params.put("totalAmount", finalTotal); // 650
                     }
                     jasperName = "viPolicy2_3_qoute_reciept.jasper";
-                    obj.setTotalAmount(String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(totalAmountNormal))); // 200+85
+                    obj.setTotalAmount(finalTotal); // 200+85
 
                     //check school rules....
                     stmt = null;
@@ -347,10 +366,11 @@ public class paymentNotification extends HttpServlet {
                     stmt = Con.createStatement();
                     ResultSet rs = stmt.executeQuery("select * from mi.traffic_units_schools where 1");
                     while (rs.next()) {
-                         if (obj.getTrafficUnit().contains(rs.getString("name"))) {
+                        if (obj.getTrafficUnit().contains(rs.getString("name"))) {
                             // Renew (old)
-                            jasperName = "viPolicy2_3_qoute_reciept_school_renew.jasper";
+                            jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
                             totalAmountSchoolOld = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesOld));
+                            params.put("newOrRenewTxt", "تدريب رخصة القيادة القديمة");
                             params.put("totalAmount", totalAmountSchoolOld); // 1685
                             params.put("medicalFees", finalMedicalFees); // 200
                             params.put("bloodFees", finalBloodFees); // 85
@@ -358,8 +378,9 @@ public class paymentNotification extends HttpServlet {
                             obj.setTotalAmount(totalAmountSchoolOld); // 1400+200+85
 
                             if (obj.getPayedElements().contains("E-Exam")) { // new
-                                jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
+                                //  jasperName = "viPolicy2_3_qoute_reciept_school_new.jasper";
                                 totalAmountSchoolNew = String.valueOf(Integer.parseInt(finalMedicalFees) + Integer.parseInt(finalBloodFees) + Integer.parseInt(schoolFeesNew));
+                                params.put("newOrRenewTxt", "تدريب رخصة القيادة الجديدة");
                                 params.put("totalAmount", totalAmountSchoolNew); // 2085
                                 params.put("medicalFees", finalMedicalFees); // 200
                                 params.put("bloodFees", finalBloodFees); // 85
@@ -397,18 +418,15 @@ public class paymentNotification extends HttpServlet {
                     entityManager.getTransaction().commit();
 
                     //insert new record with requestID at clients data on 192.168.235.76
-                     getcon getcon = new getcon();
-              
+                    getcon getcon = new getcon();
+
                     getconMedicalServer getcon1 = new getconMedicalServer();
-                
-                    
-                    
-                     if(applicationType.equals("ALL")){
-                    Con1 = getcon.myconnection();
-                     }
-                     else{
-                     Con1 = getcon1.myconnection();
-                     }
+
+                    if (applicationType.equals("ALL")) {
+                        Con1 = getcon.myconnection();
+                    } else {
+                        Con1 = getcon1.myconnection();
+                    }
                     if (Con1 != null) {
                         System.out.println("Database Connection to server 76 done successfully");
                     }
@@ -457,8 +475,8 @@ public class paymentNotification extends HttpServlet {
 ////                JasperExportManager.exportReportToPdfFile(print,"C:/User/user/Desktop/Test.pdf");
 ////                    System.out.println("ddddddddddddddddddd");
                 JasperPrint print = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-                String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
-               //  String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                 String receiptPath = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
+                //String receiptPath = "C:\\Users\\User\\Desktop\\apache-tomcat-8.5.5\\webapps\\path\\to\\receipt\\" + fileName + ".pdf";
                 JasperExportManager.exportReportToPdfFile(print, receiptPath);
 
                 String IP = "";
@@ -478,7 +496,6 @@ public class paymentNotification extends HttpServlet {
                 }
 
                 stmt.close();
-
 ////                if (request.getRemoteAddr().toString().contains("192.168.235.55") || request.getRemoteAddr().toString().contains("192.168.235.51")) {
 ////                    IP = "192.168.235.76";
 ////                } else {
@@ -519,7 +536,7 @@ public class paymentNotification extends HttpServlet {
                 response.setStatus(500);
             }
         } else if (a.equals("TIT_Vehicle_Inspection_payment")) {
-            
+
             Vehicleinspection VehicleObj = mapper.readValue(rcvd.toString(), Vehicleinspection.class);
             VehicleObj.setTotalAmount(rcvd.get("TotalAmount").getAsString());
             VehicleObj.setCancel(0);
@@ -633,7 +650,7 @@ public class paymentNotification extends HttpServlet {
             }
         } else {
             PrintWriter out = response.getWriter();
-            JsonObject error =  new JsonObject();
+            JsonObject error = new JsonObject();
             error.addProperty("Error Message", "invalid serviceID");
             out.write(error.toString());
             return;
