@@ -83,7 +83,7 @@ public class login extends HttpServlet {
 //            inputStream.close();
         }
             
-            
+            System.out.println("app Type : " + applicationType);
             	if (applicationType.equals("MEDICALPAYMENT") || applicationType.equals("INSPECTIONPAYMENT")){
 		out.println("<script type='text/javascript'>");
 		out.println("alert(' You are trying to login to payment application !');");
