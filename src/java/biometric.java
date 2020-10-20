@@ -440,6 +440,9 @@ public class biometric extends HttpServlet {
             // System.out.println(photo64);
             String sql = "update mi.clients_data set hasPhoto = 1 , MedicalCheckupID = '" + medical_check_up_ID + "' where requestID = '" + requestID + "';";
             int update = stmt3.executeUpdate(sql);
+            
+            // biometric.java
+
             /////////////////////////////////////////////////////////
             // log this transaction 
             // get logged username

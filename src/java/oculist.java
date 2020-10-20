@@ -325,7 +325,7 @@ public class oculist extends HttpServlet {
             String transID = "";
 
             Connection Con = null;
-            Statement stmt = null, stmt1 = null,stmt2 = null;
+            Statement stmt = null, stmt1 = null , stmt2 = null;
 
             getcon c = new getcon();
             Con = c.myconnection();
@@ -480,7 +480,8 @@ public class oculist extends HttpServlet {
                     stmt5 = Con.createStatement();
                     int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
                    
-                                       /////////////////////////////////////////////////////////
+                    // oculist.java
+
             // log this transaction 
             // get logged username
             String name = request.getSession().getAttribute("NAME").toString();
@@ -491,7 +492,6 @@ public class oculist extends HttpServlet {
             int inserted = stmt2.executeUpdate(sql);
             stmt2.close();
             ///////////////////////////////////////////////////////////
-                    
                     stmt5.close();
                     stmt.close();
                     Con.close();
@@ -546,7 +546,8 @@ public class oculist extends HttpServlet {
             } else {
                 if (internInspRes.isEmpty()) {
                     stmt.executeUpdate("update `clients_data` set `medical_conditions` = '" + medical_conditions_str + "' , `eyes_inspection_result` = '" + result + "' , `inspection_status` = 'W' , `eyes_exam_date` = '" + eye_request_date + "' , `right_eye_degree` = '" + Reye + "' , `left_eye_degree` = '" + Leye + "' where `requestID` ='" + requestID + "'");
-                                                                             /////////////////////////////////////////////////////////
+                    // oculist.java
+
             // log this transaction 
             // get logged username
             String name = request.getSession().getAttribute("NAME").toString();
@@ -595,8 +596,8 @@ public class oculist extends HttpServlet {
 
                         stmt5 = Con.createStatement();
                         int updated = stmt5.executeUpdate("insert into mi.log_success_request (request,requestID) values ('" + jsonRequest + "' , '" + requestID + "')");
-                        
-                                                               /////////////////////////////////////////////////////////
+                       // oculist.java
+
             // log this transaction 
             // get logged username
             String name = request.getSession().getAttribute("NAME").toString();
@@ -607,7 +608,6 @@ public class oculist extends HttpServlet {
             int inserted = stmt2.executeUpdate(sql);
             stmt2.close();
             ///////////////////////////////////////////////////////////
-                        
                         stmt5.close();
                         stmt.close();
                         Con.close();
